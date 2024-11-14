@@ -1,0 +1,29 @@
+extends ../layout.pug
+block contenido
+    
+    .container.mt-4
+        .row.justify-content-center
+            .col-md-6
+                form(action="/pacientes/" method="post" class="border p-4 rounded bg-light")
+                    
+
+                    .mb-3
+                        label(for="nombre" class="form-label") Nombre Completo:
+                        input(type="text" name="nombre" class="form-control" placeholder="Ingresa el nombre completo")
+                    
+                    .mb-3
+                        label(for="dni" class="form-label") Dni:
+                        input(type="text" name="dni" class="form-control" placeholder="Ingresa en Dni")
+                    
+                    .mb-3
+                        label(for="motivo" class="form-label") Motivo de Consulta:
+                        input(type="text" name="motivo" class="form-control" placeholder="Ingresa el motivo de consulta")
+                    .mb-3
+                        label(for="obraSocial" class="form-label") Obra Social:
+                        input(type="text" name="obraSocial" class="form-control" placeholder="Ingresa la Obra social")
+                    
+                    .mb-3
+                        label(for="tel" class="form-label") Telefono:
+                        input(type="tel" name="tel" class="form-control" placeholder="Ingresa el Telefono")
+                    
+                    button(type="submit" class="btn btn-primary w-100") Crear

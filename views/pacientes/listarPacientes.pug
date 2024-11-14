@@ -1,0 +1,27 @@
+extends ../layout.pug
+block contenido
+
+    a(href="./Crear" class="btn btn-success") Crear Paciente
+    if mensaje 
+        .alert.alert-success#alerta-exito
+            h4= mensaje
+
+    table(class="table table-striped")
+        thead 
+            tr 
+                th Nombre 
+                th Dni
+                th Motivo de Consulta 
+                th Obra Social 
+                th Telefono
+        tbody    
+            each paciente in pacientes
+                tr(id=`paciente-${paciente.id}`)
+                    td= paciente.nombre_completo
+                    td= paciente.dni
+                    td= paciente.motivo_consulta 
+                    td= paciente.obra_social 
+                    td= paciente.datos_contacto
+                    td
+                        a(href=`/pacientes/editar/${paciente.id}` class="btn btn-info") EDITAR 
+                        

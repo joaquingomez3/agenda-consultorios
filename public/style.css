@@ -1,0 +1,15 @@
+.table-danger {
+    background-color: rgba(255, 0, 0, 0.2) !important; /* Un fondo rojo claro */
+}
+.text-decoration-line-through {
+    text-decoration: line-through;
+}
+.card-hover {
+    transition: transform 0.3s; /* Suaviza la animación */
+  }
+  
+.card-hover:hover {
+    transform: scale(1.05); /* Aumenta el tamaño de la tarjeta */
+    z-index: 1; /* Asegúrate de que la tarjeta se muestre sobre otras */
+  }
+  

@@ -1,0 +1,20 @@
+extends ../layout.pug
+block contenido
+
+    .container
+        .row.justify-content-center
+            .col-md-6
+                form(action="/agendas/" method="post" class="border p-4 rounded bg-light")
+                    .mb-3
+                        label(for="sucursal" class="form-label") Sucursal:
+                        input(type="text" name="sucursal" class="form-control" placeholder="Ingresa la sucursal")
+                    .mb-3
+                        label(for="clasificacion" class="form-label") Clasificacion:
+                        input(type="text" name="clasificacion" class="form-control" placeholder="Ingresa la clasificacion")
+                    .mb-3
+                        label(for="maxTurnos" class="form-label") Maximo de Sobreturnos:
+                        input(type="text" name="maxTurnos" class="form-control" placeholder="Ingresa la cantidad de sobreturnos")
+                    button(type="submit" class="btn btn-primary w-100") Agregar
+
+
+            

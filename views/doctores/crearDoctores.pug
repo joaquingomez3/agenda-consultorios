@@ -1,0 +1,27 @@
+extends ../layout.pug
+block contenido
+
+    .container
+        .row.justify-content-center
+            .col-md-6
+                form(action="/doctores/" method="post" class="border p-4 rounded bg-light")
+                    .mb-3
+                        label(for="nombre" class="form-label") Nombre Completo:
+                        input(type="text" name="nombre" class="form-control" placeholder="Ingresa el nombre completo")
+                    .mb-3
+                        label(for="telefono" class="form-label") Telefono:
+                        input(type="text" name="telefono" class="form-control"  placeholder="Ingresa el telefono")
+                    .mb-3
+                        label(for="dni" class="form-label") Dni:
+                        input(type="text" name="dni" class="form-control"  placeholder="Ingresa el DNI")
+                    .mb-3
+                        label(for="mail" class="form-label") Mail:
+                        input(type="text" name="mail" class="form-control"  placeholder="Ingresa el Correo")
+                    .mb-3
+                        label(for="domicilio" class="form-label") Domicilio:
+                        input(type="text" name="domicilio" class="form-control"  placeholder="Ingresa el Domicilio")
+                    
+                    button(type="submit" class="btn btn-primary w-100") Agregar
+
+
+            

@@ -1,0 +1,45 @@
+extends ../layout.pug
+block contenido
+
+    h1.text-center.mt-4 Lista de Turnos de la Agenda
+    .container.mt-5
+        .row
+            .col-md-12
+                .d-flex.justify-content-between.mb-3
+                    h2 Lista de Turnos
+                    
+                    form.form-inline
+                        input.form-control.mr-sm-2(type="search", placeholder="Buscar turno...", aria-label="Buscar")
+                        button.btn.btn-outline-primary(type="submit") Buscar
+                
+                table.table.table-hover.table-striped.table-bordered
+                    thead.thead-dark
+                        tr
+                            
+                            th Paciente
+                            th Doctor 
+                            th Fecha
+                            th Hora de Inicio
+                            th Hora de Fin
+                            th Estado
+                            th Motivo
+                            th Acciones
+                    each turno in turnos
+                        tr
+                           
+                            td= turno.paciente_nombre || 'Sin asignar'
+                            td= turno.doctor_nombre
+                            td= turno.fechaTurno
+                            td= turno.inicio
+                            td= turno.fin
+                            td
+                                if turno.estado_turno === 'Libre'
+                                    span.badge.text-bg-success Libre
+                                else if turno.estado_turno === 'Reservado'
+                                    span.badge.text-bg-warning Reservado
+                            td= turno.motivo || 'No especificado'
+                            td
+                               a.btn.btn-sm.btn-primary(href=`/agendas/asignar/${turno.turno_id}`) Asignar Paciente
+
+
+       

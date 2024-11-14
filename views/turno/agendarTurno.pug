@@ -1,0 +1,83 @@
+extends ../layout.pug
+
+block contenido
+  .container
+    h1 Agendar Turno
+    form(action="/agendar", method="post")
+      .form-group
+        label(for="especialidad") Especialidad
+        select#especialidad.form-control(name="especialidad" required)
+          option(value="") Selecciona una especialidad
+
+      .form-group
+        label(for="doctor") Doctor
+        select#doctor.form-control(name="doctor" required)
+          option(value="") Selecciona un doctor
+
+      
+      .form-group
+        label(for="nombre") Nombre del Paciente
+        input#nombre.form-control(type="text", name="nombre" required)
+
+      .form-group
+        label(for="fecha") Fecha
+        input#fecha.form-control(type="date", name="fecha" required)
+
+      .form-group
+        label(for="hora") Hora
+        input#hora.form-control(type="time", name="hora" required)
+
+      button.btn.btn-primary(type="submit") Agendar Turno
+     
+    script. 
+            $(document).ready(function() {
+        // Cargar especialidades al cargar la página
+        $.ajax({
+            url: '/especialidades',
+            type: 'GET',
+            success: function(data) {
+            
+            const $especialidadSelect = $('#especialidad');
+            $especialidadSelect.empty(); // Limpiar el select antes de agregar opciones
+            $especialidadSelect.append('<option value="">Selecciona una especialidad</option>');
+            
+            data.forEach(function(especialidad) {
+                $especialidadSelect.append('<option value="' + especialidad.id + '">' + especialidad.nombre + '</option>');
+            });
+            },
+            error: function(xhr, status, error) {
+            console.error('Error al cargar las especialidades:', error); // Log para depuración
+            alert('Error al cargar las especialidades');
+            }
+        });
+        });
+        $('#especialidad').on('change', function() {
+        const especialidadId = $(this).val();
+        
+            if (especialidadId) {
+                console.log('hola' + especialidadId)
+                $.ajax({
+                    url: '/doctores-especialidad/' + especialidadId,
+                    type: 'GET',
+                    success: function(data) {
+                        
+                        console.log('Datos de doctores:', data); // Log para depuración
+                        $('#doctor').empty();
+                        $('#doctor').append('<option value="">Selecciona un doctor</option>');
+                        data.forEach(function(doctor) {
+                            $('#doctor').append('<option value="' + doctor.id + '">' + doctor.nombre_completo + '</option>');
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al cargar los doctores:', error); // Log para depuración
+                        alert('Error al cargar los doctores');
+                    }
+                });
+            } else {
+                $('#doctor').empty();
+                $('#doctor').append('<option value="">Selecciona un doctor</option>');
+            }
+            });
+            
+            
+        

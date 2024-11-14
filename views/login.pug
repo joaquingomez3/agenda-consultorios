@@ -1,0 +1,19 @@
+extends layout.pug
+
+block contenido
+    .container
+        .row.justify-content-center
+            .col-md-6
+                
+                if error
+                    .alert.alert-danger
+                        | #{error}
+                form(method="POST" action="/login")
+                    .form-group
+                        label(for="username") Usuario
+                        input#username.form-control(type="text" name="username" required)
+                    .form-group
+                        label(for="password") Contraseña
+                        input#password.form-control(type="password" name="password" required)
+                    .form-group.text-center.mt-3
+                        button.btn.btn-primary(type="submit") Iniciar Sesión

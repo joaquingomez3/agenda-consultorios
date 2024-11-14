@@ -1,0 +1,23 @@
+extends ../layout.pug
+block contenido
+    
+   .container.mt-4
+    .row.justify-content-center
+        .col-md-6
+            form(action="/agendas/actualizar" method="post" class="border p-4 rounded bg-light")
+                // Campo oculto para pasar el id
+                input(type="hidden", name="id", value=agenda.id)
+
+                .mb-3
+                    label(for="sucursal" class="form-label") Sucursal:
+                    input(type="text" name="sucursal" class="form-control" value=agenda.id_sucursal placeholder="Ingresa el nombre completo")
+                
+                .mb-3
+                    label(for="clasificacion" class="form-label") Clasificacion:
+                    input(type="text" name="clasificacion" class="form-control" value=agenda.clasificacion placeholder="Ingresa la matrícula")
+                
+                .mb-3
+                    label(for="maxTurnos" class="form-label") Maximo de sobreturnos:
+                    input(type="text" name="maxTurnos" class="form-control" value=agenda.max_sobreturnos placeholder="Ingresa el número de sucursal")
+                
+                button(type="submit" class="btn btn-primary w-100") Editar

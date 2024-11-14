@@ -1,0 +1,38 @@
+extends ../layout.pug
+block contenido
+    
+    a(href="./vistaCrear" class="btn btn-success" class="me-2") Crear Agenda
+    a(href="./generarTurnosAgendas" class="btn btn-success") Generar turnos
+    .form-inline
+    
+    if mensaje 
+        .alert.alert-success#alerta-exito
+            h4= mensaje
+    
+    table(class="table table-striped")
+        thead 
+            tr 
+                th Dias 
+                th Hora de inicio 
+                th Hora de fin 
+                th Duracion de Turnos
+                th clasificacion
+                th Nombre de Sucursal 
+                th Nombre de Doctor
+                th Especialidad
+                
+        tbody    
+            each agenda in agendas
+                tr(id=`agenda-${agenda.id}`)
+                    td= agenda.dias
+                    td= agenda.horaInicio
+                    td= agenda.horaFin
+                    td= agenda.duracion
+                    td= agenda.clasificacion
+                    td= agenda.nombre_sucursal
+                    td= agenda.nombre_completo
+                    td= agenda.nombre_especialidad
+                    td
+                        
+                        a(href=`./editar/${agenda.id}` class="btn btn-info" class="me-2") EDITAR
+                        a(href=`./${agenda.id}/turnos` class="btn btn-warning") Ver Turnos

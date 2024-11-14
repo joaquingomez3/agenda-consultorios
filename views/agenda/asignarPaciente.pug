@@ -1,0 +1,18 @@
+extends ../layout.pug
+block contenido
+   
+    h1.text-center.mt-4 Asignar Paciente
+    .container.mt-5
+        form(method="post", action="/agendas/asignar")
+            input(type="hidden", name="turno_id", value=turnoId)
+            
+            .mb-3
+                label(for="paciente_id") Seleccionar Paciente
+                select.form-control(name="paciente_id", required)
+                    option(value="") Selecciona un paciente
+                    each paciente in pacientes
+                        option(value=paciente.id) #{paciente.nombre_completo}
+            .mb-3
+                label(for="motivo") Motivo
+                input.form-control(type="text", name="motivo", required)
+            button.btn.btn-primary(type="submit") Asignar Paciente

@@ -1,0 +1,39 @@
+extends ../layout.pug
+block contenido
+
+    a(href="./Crear" class="btn btn-success") Crear Doctor
+    if mensaje 
+        .alert.alert-success#alerta-exito
+            h4= mensaje
+
+    table(class="table table-striped")
+        thead 
+            tr 
+                th Nombre
+                th Telefono 
+                th Dni 
+                th Mail 
+                th Domicilio 
+                th Matriculas
+                th Especialidades
+                th Acciones
+        tbody    
+            each doctor in doctores
+                tr(id=`doctor-${doctor.id}` class=!(doctor.activo ? '' : 'table-danger text-decoration-line-through'))
+                    td= doctor.nombre_completo
+                    td= doctor.telefono
+                    td= doctor.dni
+                    td= doctor.mail
+                    td= doctor.domicilio
+                    td= doctor.matricula
+                    td= doctor.especialidad
+
+                    td
+                        a(href=`./editar/${doctor.id}` class="btn btn-info me-2") EDITAR 
+                        a(href=`./${doctor.id}/especialidades` class="btn btn-secondary me-2") ESPECIALIDADES
+                        if doctor.activo
+                            button(type="button" class="btn btn-danger me-2 " onclick=`cambiarEstadoDoctor(${doctor.id}, false)`) DESHABILITAR 
+                            button(type="button" class="btn btn-warning d-none" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`) HABILITAR
+                        else
+                            button(type="button" class="btn btn-warning me-2" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`) HABILITAR
+                            button(type="button" class="btn btn-danger d-none" onclick=`cambiarEstadoDoctor(${doctor.id}, false)`) DESHABILITAR
