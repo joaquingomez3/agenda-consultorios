@@ -37,5 +37,5 @@ app.use('/turnos', turnoRoutes);
 
 //levanto el servicio
 app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}/login`);
+    console.log(`Servidor corriendo en http://localhost:${port}/`);
 })
