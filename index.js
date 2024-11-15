@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const pug = require('pug');
 const app = express(); //creo el objeto aplicacion
 const port = 3000;
@@ -13,7 +14,7 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 //middlewares
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 //middleware para manejar urlencoded
