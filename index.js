@@ -14,9 +14,7 @@ app.set('views', './views');
 
 //middlewares
 app.use(express.static('public'));
-app.get('/', (req, res) => {
-    res.redirect('/login');
-})
+
 
 //middleware para manejar urlencoded
 app.use(express.urlencoded({ extended: true }));
