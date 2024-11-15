@@ -13,8 +13,10 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 //middlewares
-
-
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+    res.redirect('/login');
+})
 
 //middleware para manejar urlencoded
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +34,7 @@ app.use('/agendas', agendaRoutes);
 app.use('/turnos', turnoRoutes);
 
 
-app.use(express.static('public'));
+
 
 //levanto el servicio
 app.listen(port, () => {
