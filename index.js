@@ -13,7 +13,7 @@ app.set('view engine', 'pug');
 app.set('views', './views');
 
 //middlewares
-app.use(express.static('public'));
+
 
 
 //middleware para manejar urlencoded
@@ -32,7 +32,7 @@ app.use('/agendas', agendaRoutes);
 app.use('/turnos', turnoRoutes);
 
 
-
+app.use(express.static('public'));
 
 //levanto el servicio
 app.listen(port, () => {
