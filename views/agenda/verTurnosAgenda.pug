@@ -29,7 +29,7 @@ block contenido
                            
                             td= turno.paciente_nombre || 'Sin asignar'
                             td= turno.doctor_nombre
-                            td= turno.fechaTurno
+                            td= formatearFecha(turno.fechaTurno)
                             td= turno.inicio
                             td= turno.fin
                             td

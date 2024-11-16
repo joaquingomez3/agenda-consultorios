@@ -87,7 +87,8 @@ exports.verTurnosAgenda = (req, res) => {
         if (err) {
             return res.status(500).json({ error: 'Error al traer turnos' });
         }
-        res.render('agenda/verTurnosAgenda', { turnos: results });
+        
+        res.render('agenda/verTurnosAgenda', { turnos: results, formatearFecha });
     });
 };
 exports.mostrarAsignacionPaciente = (req, res) => {
@@ -121,4 +122,19 @@ exports.asignarPaciente = (req, res) => {
         });
     });
 };
+
+function formatearFecha(fechaStr) {
+    
+    const fecha = new Date(fechaStr);
+
+    
+    const dia = fecha.getDate().toString().padStart(2, '0'); 
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); 
+    const anio = fecha.getFullYear();
+
+    
+    return `${dia}-${mes}-${anio}`;
+}
+
+
 
