@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const agendaController = require('../controllers/agendaController');
+const chequeo = require ('../middlewares/estaAunteticado');
 
-
-router.get('/', agendaController.listarAgendas);
-router.get('/generarTurnosAgendas', agendaController.generarTurnosAgendas);
-router.get('/generar-turnos/:id', agendaController.generarTurnosDiarios);
-router.get('/vistaCrear', agendaController.vistaCrear);
+router.get('/', chequeo, agendaController.listarAgendas);
+router.get('/generarTurnosAgendas', chequeo, agendaController.generarTurnosAgendas);
+router.get('/generar-turnos/:id', chequeo, agendaController.generarTurnosDiarios);
+router.get('/vistaCrear', chequeo, agendaController.vistaCrear);
 router.post('/', agendaController.crearAgenda);
-router.get('/editar/:id', agendaController.vistaActualizar);
+router.get('/editar/:id', chequeo, agendaController.vistaActualizar);
 router.post('/actualizar', agendaController.actualizarAgenda);
-router.get('/:id/turnos', agendaController.verTurnosAgenda);
-router.get('/asignar/:turnoId', agendaController.mostrarAsignacionPaciente);
+router.get('/:id/turnos', chequeo, agendaController.verTurnosAgenda);
+router.get('/asignar/:turnoId', chequeo, agendaController.mostrarAsignacionPaciente);
 router.post('/asignar', agendaController.asignarPaciente);
 
 module.exports = router;

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const pacienteController = require('../controllers/pacienteController');
-
-router.get('/', pacienteController.listarPacientes);
-router.get('/Crear', pacienteController.vistaPaciente);
+const chequeo = require ('../middlewares/estaAunteticado');
+router.get('/', chequeo, pacienteController.listarPacientes);
+router.get('/Crear', chequeo, pacienteController.vistaPaciente);
 router.post('/', pacienteController.crearPaciente);
-router.get('/editar/:id', pacienteController.editarPaciente);
+router.get('/editar/:id', chequeo, pacienteController.editarPaciente);
 router.post('/actualizar', pacienteController.actualizarPaciente);
 
 

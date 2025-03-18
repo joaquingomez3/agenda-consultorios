@@ -1,6 +1,10 @@
 const bcript = require('bcrypt');
 const connection = require('../config/baseDatos');
+
 exports.mostrarLogin = (req, res) => {
+    req.session.logueado = false;
+    console.log(req.session.logueado)
+    
     res.render('login');
 }
 
@@ -22,6 +26,8 @@ exports.procesarLogin = (req, res) => {
             res.render('login', { error: 'contraseña incorrecta' });
         } 
         //firmar un jwt con id , nombre , rol de usuario y lo guardo en una cokie
+        req.session.logueado = true;
+        req.session.rol = results[0].rol;
         res.redirect('/inicio');
     })
     // Validar las credenciales

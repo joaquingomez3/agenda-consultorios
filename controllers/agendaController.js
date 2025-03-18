@@ -97,6 +97,7 @@ exports.mostrarAsignacionPaciente = (req, res) => {
         if (err) {
             return res.status(500).json({ error: 'Error al obtener la lista de pacientes' });
         }
+        
     res.render('agenda/asignarPaciente', { turnoId, pacientes });
     });
 }
