@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const turnoController = require('../controllers/turnoController');
-const chequeo = require ('../middlewares/estaAunteticado');
+const chequeo = require ('../middlewares/authMiddleware');
 // Ruta para listar los turnos futuros (o de hoy)
 router.get('/listar', chequeo, turnoController.listarTurnos);
 

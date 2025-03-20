@@ -1,10 +1,10 @@
+
 const express = require('express');
 const router = express.Router();
-const mainController = require('../controllers/inicioController');
-// const estaAunteticado = require('../middlewares/estaAunteticado');
-const chequeo = require ('../middlewares/estaAunteticado');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-
-router.get('/inicio', chequeo, mainController.vistaInicio); // Ruta para la vista de inicio
+router.get('/inicio', authMiddleware, (req, res) => {
+    res.render('inicio', { usuario: req.user });
+});
 
 module.exports = router;

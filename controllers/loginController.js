@@ -1,4 +1,4 @@
-const bcript = require('bcrypt');
+/*const bcript = require('bcrypt');
 const connection = require('../config/baseDatos');
 
 exports.mostrarLogin = (req, res) => {
@@ -39,4 +39,41 @@ exports.procesarLogin = (req, res) => {
     //     // Si las credenciales son incorrectas, puedes redirigir de nuevo al login
     //     res.render('login', { error: 'Usuario o contraseña incorrectos' });
     // }
-}
+}*/
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const connection = require('../config/baseDatos');
+
+exports.mostrarLogin = (req, res) => {
+    res.render('login');
+};
+
+exports.procesarLogin = (req, res) => {
+    const { username, password } = req.body;
+
+    connection.query('SELECT * FROM usuario WHERE nombre_usuario = ?', [username], async (err, results) => {
+        if (err) {
+            console.error('Error en la base de datos:', err);
+            return res.status(500).json({ error: 'Error en la base de datos' });
+        }
+
+        if (results.length === 0) {
+            return res.render('login', { error: 'Usuario o contraseña incorrectos' });
+        }
+
+        const usuario = results[0];
+        const coincide = await bcrypt.compare(password, usuario.contrasenia);
+
+        if (!coincide) {
+            return res.render('login', { error: 'Contraseña incorrecta' });
+        }
+
+        // Generar el token JWT
+        const token = jwt.sign({ id: usuario.id, username: usuario.nombre_usuario, rol: usuario.rol }, 'clave_secreta', { expiresIn: '1h' });
+
+        // Guardar el token en una cookie
+        res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 });
+
+        res.redirect('/inicio' );
+    });
+};

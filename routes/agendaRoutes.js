@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const agendaController = require('../controllers/agendaController');
-const chequeo = require ('../middlewares/estaAunteticado');
+const chequeo = require ('../middlewares/authMiddleware');
 
 router.get('/', chequeo, agendaController.listarAgendas);
 router.get('/generarTurnosAgendas', chequeo, agendaController.generarTurnosAgendas);

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const doctorController = require('../controllers/doctorController');
-const chequeo = require ('../middlewares/estaAunteticado');
+const chequeo = require ('../middlewares/authMiddleware');
 
 router.get('/', chequeo, doctorController.listarDoctores);
 router.get('/Crear', chequeo, doctorController.vistaDoctor);
