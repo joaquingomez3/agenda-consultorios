@@ -1,4 +1,4 @@
-// models/Doctor.js
+
 const connection = require('../config/baseDatos');
 
 const Doctor = {};

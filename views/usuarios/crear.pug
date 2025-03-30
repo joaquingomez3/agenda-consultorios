@@ -1,0 +1,22 @@
+extends ../layout.pug 
+block contenido
+  h1.text-center Crear Usuario
+  .container
+        .row.justify-content-center
+            .col-md-6
+                  form(method="POST" action="/usuarios/crear")
+                    div.form-group
+                      label(for="nombre") Nombre Completo
+                      input#nombre.form-control(type="text" name="nombre_usuario" required)
+
+                    div.form-group
+                      label(for="contrasenia") Contraseña
+                      input#contrasenia.form-control(type="password" name="contrasenia" required)
+
+                    div.form-group
+                      label(for="rol") Rol
+                      select#rol.form-control(name="rol")
+                        option(value="usuario") Usuario
+                        option(value="admin") Administrador
+
+                    button.btn.btn-primary(type="submit") Crear

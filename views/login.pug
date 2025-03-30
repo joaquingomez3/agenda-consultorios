@@ -4,7 +4,10 @@ block contenido
     .container
         .row.justify-content-center
             .col-md-6
-                
+                if success 
+                    .alert.alert-success#success-message
+                        | #{success}
+
                 if error
                     .alert.alert-danger
                         | #{error}
@@ -17,3 +20,13 @@ block contenido
                         input#password.form-control(type="password" name="password" required)
                     .form-group.text-center.mt-3
                         button.btn.btn-primary(type="submit") Iniciar Sesión
+                a(href="/usuarios/crear" class="btn btn-success") Crear Usuario   
+    script.
+        setTimeout(() => {
+            const mensaje = document.getElementById('success-message');
+            if (mensaje) {
+                mensaje.style.transition = 'opacity 1s';
+                mensaje.style.opacity = '0';
+                setTimeout(() => mensaje.remove(), 1000);
+            }
+        }, 3000); // Desaparece después de 3 segundos

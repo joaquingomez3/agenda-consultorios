@@ -16,6 +16,7 @@ const pacienteRoutes = require('./routes/pacienteRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
 const turnoRoutes = require('./routes/turnoRoutes');
 const cookieSession = require('cookie-session');
+const usuarioRoutes = require('./routes/usuarioRoutes');
 
 //configuraciones para pug
 app.set('view engine', 'pug'); 
@@ -56,6 +57,7 @@ app.use('/', inicioRouter);
 app.use('/pacientes', pacienteRoutes);
 app.use('/agendas', agendaRoutes);
 app.use('/turnos', turnoRoutes);
+app.use('/usuarios', usuarioRoutes);
 
 
 //levanto el servicio
