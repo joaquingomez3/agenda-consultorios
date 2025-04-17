@@ -2,25 +2,47 @@ extends layout.pug
 
 block contenido
     .container
-        .row.justify-content-center
-            .col-md-6
-                if success 
-                    .alert.alert-success#success-message
-                        | #{success}
+        .row.justify-content-center.align-items-start.mt-4
 
-                if error
-                    .alert.alert-danger
-                        | #{error}
-                form(method="POST" action="/login")
-                    .form-group
-                        label(for="username") Usuario
-                        input#username.form-control(type="text" name="username" required)
-                    .form-group
-                        label(for="password") Contraseña
-                        input#password.form-control(type="password" name="password" required)
-                    .form-group.text-center.mt-3
-                        button.btn.btn-primary(type="submit") Iniciar Sesión
-                a(href="/usuarios/crear" class="btn btn-success") Crear Usuario   
+            .col-md-6.text-center
+                img(src="/imagenes/doc.jpg" alt="Doctores" class="img-fluid w-75")
+
+            .col-md-5
+                .card.shadow.p-4
+                    .text-center
+                        img(src="/imagenes/doctores.jpg" alt="Avatar" class="rounded-circle mb-3" width="80")
+                        h2 CONSULTORIO MEDICO
+                        h5.text-muted INICIAR SESIÓN
+
+                    if success 
+                        .alert.alert-success#success-message
+                            | #{success}
+
+                    if error
+                        .alert.alert-danger
+                            | #{error}
+                    
+                    form(method="POST" action="/login")
+                        .form-group.mb-3
+                            label.visually-hidden(for="username") Usuario
+                            .input-group
+                                span.input-group-text
+                                    i.fas.fa-user
+                                input#username.form-control(type="text" name="username" placeholder="Usuario" required)
+                                
+                        .form-group.mb-3
+                            label.visually-hidden(for="password") Contraseña
+                            .input-group
+                                span.input-group-text
+                                    i.fas.fa-lock
+                                input#password.form-control(type="password" name="password" placeholder="Contraseña" required)
+                                
+                        .d-grid.mt-3
+                            button.btn.btn-primary.btn-lg(type="submit") Iniciar Sesión
+                    
+                    .text-center.mt-3
+                        a(href="/usuarios/crear" class="btn btn-success") Crear Usuario   
+
     script.
         setTimeout(() => {
             const mensaje = document.getElementById('success-message');
@@ -29,4 +51,4 @@ block contenido
                 mensaje.style.opacity = '0';
                 setTimeout(() => mensaje.remove(), 1000);
             }
-        }, 3000); // Desaparece después de 3 segundos
+        }, 3000);

@@ -13,7 +13,7 @@ Paciente.getAll = (callback) => {
 // Crear paciente
 Paciente.create = (nombre, dni, motivoConsulta, obraSocial, contacto, callback) => {
     connection.query(
-        'INSERT INTO paciente (nombre_completo, dni, motivo_consulta, obra_social, contacto) VALUES (?, ?, ?, ?, ?)', 
+        'INSERT INTO paciente (nombre_completo, dni, motivo_consulta, obra_social, datos_contacto) VALUES (?, ?, ?, ?, ?)', 
         [nombre, dni, motivoConsulta, obraSocial, contacto], 
         (err, results) => {
             callback(err, results);
@@ -31,7 +31,7 @@ Paciente.getById = (id, callback) => {
 // Actualizar paciente
 Paciente.update = (id, nombre, dni, motivoConsulta, obraSocial, contacto, callback) => {
     connection.query(
-        'UPDATE paciente SET nombre_completo = ?, dni = ?, motivo_consulta = ?, obra_social = ?, contacto = ? WHERE id = ?', 
+        'UPDATE paciente SET nombre_completo = ?, dni = ?, motivo_consulta = ?, obra_social = ?, datos_contacto = ? WHERE id = ?', 
         [nombre, dni, motivoConsulta, obraSocial, contacto, id], 
         (err, results) => {
             callback(err, results);

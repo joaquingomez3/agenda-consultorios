@@ -4,6 +4,11 @@ block contenido
     .container
         .row.justify-content-center
             .col-md-6
+                if errores
+                    .alert.alert-danger
+                        ul
+                            each error in errores
+                                li= error
                 form(action="/doctores/" method="post" class="border p-4 rounded bg-light")
                     .mb-3
                         label(for="nombre" class="form-label") Nombre Completo:

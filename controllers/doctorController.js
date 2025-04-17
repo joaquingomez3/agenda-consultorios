@@ -16,10 +16,21 @@ exports.vistaDoctor = (req, res) => {
 exports.crearDoctor = (req, res) => {
     const {nombre, telefono, dni, mail, domicilio} = req.body;
 
-    // Validaciones
-     if (!nombre || !telefono || !dni || !mail || !domicilio) {
-         throw new Error('Todos los campos son obligatorios');
-     }
+    const errores = [];
+
+    if (!nombre || nombre.trim().length === 0) errores.push('El nombre es obligatorio.');
+    if (!telefono || !/^\d{7,15}$/.test(telefono)) errores.push('El teléfono debe tener entre 7 y 15 dígitos.');
+    if (!dni || !/^\d{7,8}$/.test(dni)) errores.push('El DNI debe tener entre 7 y 8 números.');
+    if (!mail || mail.trim().length === 0) errores.push('El mail es obligatorio.');
+    
+
+    if (errores.length > 0) {
+        return res.render('doctores/crearDoctores', {
+            errores,
+            doctores: { nombre, telefono, dni, mail, domicilio }
+        });
+    }
+    
 
     Doctor.create(nombre, telefono, dni, mail, domicilio, (err, results) => {
         if (err) throw new Error('Error al crear doctor');
@@ -56,6 +67,29 @@ exports.cambiarEstadoDoctor = (req, res) => {
 
 exports.actualizarDoctor = (req, res) => {
     const { id, nombre, telefono, dni, mail, domicilio } = req.body;
+    const errores = [];
+
+    if (!nombre || nombre.trim().length === 0) errores.push('El nombre es obligatorio.');
+    if (!telefono || !/^\d{7,15}$/.test(telefono)) errores.push('El teléfono debe tener entre 7 y 15 dígitos.');
+    if (!dni || !/^\d{7,8}$/.test(dni)) errores.push('El DNI debe tener entre 7 y 8 números.');
+    if (!mail|| mail.trim().length === 0) errores.push('el mail es obligatorio.');
+    if (!domicilio || domicilio.trim().length === 0) errores.push('El domicilio es obligatorio.');
+    
+
+    if (errores.length > 0) {
+        // Para renderizar de nuevo el formulario con los datos y errores
+        return res.render('doctores/editarDoctores', {
+            errores,
+            doctor: {
+                id,
+                nombre_completo: nombre,
+                telefono,
+                dni,
+                mail,
+                domicilio
+            }
+        });
+    }
 
     Doctor.update(id, nombre, telefono, dni, mail, domicilio, (err, results) => {
         if (err) throw new Error('Error al actualizar doctor');

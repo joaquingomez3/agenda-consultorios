@@ -4,6 +4,11 @@ block contenido
    .container.mt-4
     .row.justify-content-center
         .col-md-6
+            if errores
+                    .alert.alert-danger
+                        ul
+                            each error in errores
+                                li= error
             form(action="/doctores/actualizar" method="post" class="border p-4 rounded bg-light")
                 // Campo oculto para pasar el id
                 input(type="hidden", name="id", value=doctor.id)
