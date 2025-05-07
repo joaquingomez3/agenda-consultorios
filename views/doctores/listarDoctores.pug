@@ -30,7 +30,7 @@ block contenido
 
                     td
                         a(href=`./editar/${doctor.id}` class="btn btn-info me-2") EDITAR 
-                        a(href=`./${doctor.id}/especialidades` class="btn btn-secondary me-2") ESPECIALIDADES
+                        a(href=`./${doctor.id}/especialidades` class="btn btn-secondary me-2") ESPS.
                         if doctor.activo
                             button(type="button" class="btn btn-danger me-2 " onclick=`cambiarEstadoDoctor(${doctor.id}, false)`) DESHABILITAR 
                             button(type="button" class="btn btn-warning d-none" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`) HABILITAR

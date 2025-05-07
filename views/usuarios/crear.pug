@@ -2,21 +2,30 @@ extends ../layout.pug
 block contenido
   h1.text-center Crear Usuario
   .container
-        .row.justify-content-center
-            .col-md-6
-                  form(method="POST" action="/usuarios/crear")
-                    div.form-group
-                      label(for="nombre") Nombre Completo
-                      input#nombre.form-control(type="text" name="nombre_usuario" required)
+    if errores
+      .alert.alert-danger
+        ul
+          each err in errores
+            li= err
 
-                    div.form-group
-                      label(for="contrasenia") Contraseña
-                      input#contrasenia.form-control(type="password" name="contrasenia" required)
+    .row.justify-content-center
+      .col-md-6
+        form(method="POST" action="/usuarios/crear")
+          div.form-group
+            label(for="nombre") Nombre Usuario
+            input#nombre.form-control(
+              type="text",
+              name="nombre_usuario",
+              required,
+              value=nombre_usuario || ''
+            )
 
-                    div.form-group
-                      label(for="rol") Rol
-                      select#rol.form-control(name="rol")
-                        option(value="usuario") Usuario
-                        option(value="admin") Administrador
+          div.form-group
+            label(for="contrasenia") Contraseña
+            input#contrasenia.form-control(type="password" name="contrasenia" required)
+          div.form-group
+            label(for="contrasenia") Repite la Contraseña
+            input#contrasenia.form-control(type="password" name="nuevaContrasenia" required)
+       
 
-                    button.btn.btn-primary(type="submit") Crear
+          button.btn.btn-primary(type="submit") Crear

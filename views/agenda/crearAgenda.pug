@@ -1,20 +1,42 @@
 extends ../layout.pug
 block contenido
-
     .container
         .row.justify-content-center
             .col-md-6
                 form(action="/agendas/" method="post" class="border p-4 rounded bg-light")
                     .mb-3
                         label(for="sucursal" class="form-label") Sucursal:
-                        input(type="text" name="sucursal" class="form-control" placeholder="Ingresa la sucursal")
+                        select(name="id_sucursal" class="form-control")
+                            each sucursal in sucursales
+                                option(value=sucursal.id)= sucursal.nombre
+                    
                     .mb-3
-                        label(for="clasificacion" class="form-label") Clasificacion:
-                        input(type="text" name="clasificacion" class="form-control" placeholder="Ingresa la clasificacion")
+                        label(for="matricula" class="form-label") Doctor:
+                        select(name="matricula" class="form-control")
+                            each doctor in doctores
+                                option(value=doctor.matricula)= doctor.nombre_completo
+
                     .mb-3
-                        label(for="maxTurnos" class="form-label") Maximo de Sobreturnos:
-                        input(type="text" name="maxTurnos" class="form-control" placeholder="Ingresa la cantidad de sobreturnos")
+                        label(for="clasificacion" class="form-label") Clasificación:
+                        input(type="text" name="clasificacion" class="form-control" placeholder="Ingresa la clasificación")
+
+                    .mb-3
+                        label(for="sobreturnos" class="form-label") Máximo de Sobreturnos:
+                        input(type="text" name="sobreturnos" class="form-control" placeholder="Ingresa la cantidad de sobreturnos")
+                    
+                    .mb-3
+                        label(for="dias" class="form-label") Días:
+                        input(type="text" name="dias" class="form-control" placeholder="Ej: lunes, martes, miércoles")
+
+                    .mb-3
+                        label(for="horainicio" class="form-label") Hora de Inicio:
+                        input(type="time" name="horainicio" class="form-control")
+
+                    .mb-3
+                        label(for="horaFin" class="form-label") Hora de Fin:
+                        input(type="time" name="horaFin" class="form-control")
+
+                    .mb-3
+                        label(for="duracion" class="form-label") Duración de Turno:
+                        input(type="text" name="duracion" class="form-control" placeholder="Ej: 30min")
                     button(type="submit" class="btn btn-primary w-100") Agregar
-
-
-            

@@ -6,6 +6,7 @@ const chequeo = require ('../middlewares/authMiddleware');
 router.get('/', chequeo, agendaController.listarAgendas);
 router.get('/generarTurnosAgendas', chequeo, agendaController.generarTurnosAgendas);
 router.get('/generar-turnos/:id', chequeo, agendaController.generarTurnosDiarios);
+router.get('/vistaCrear', chequeo, agendaController.formularioCrearAgenda);
 router.get('/vistaCrear', chequeo, agendaController.vistaCrear);
 router.post('/', agendaController.crearAgenda);
 router.get('/editar/:id', chequeo, agendaController.vistaActualizar);

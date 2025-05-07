@@ -29,7 +29,11 @@ exports.crearPaciente = (req, res) => {
     }
 
     Paciente.create(nombre, dni, motivoConsulta, obraSocial, contacto, (err, results) => {
-        if (err) throw new Error('Error al crear paciente');
+        if (err) {
+            console.error('Error al crear paciente:', err); 
+            return res.status(500).send('Ocurrió un error al crear el paciente');
+        }
+        
         
         Paciente.getAll((err, results) => {
             if (err) throw new Error('Error al listar pacientes');

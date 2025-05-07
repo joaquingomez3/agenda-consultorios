@@ -32,13 +32,33 @@ const Agenda = {
         connection.query('SELECT * FROM agenda WHERE id = ?', [id], callback);
     },
 
-    crearAgenda({ id_sucursal, clasificacion, max_sobreturnos }, callback) {
+    obtenerSucursales(callback) {
+        connection.query('SELECT id, nombre FROM sucursal', callback);
+    },
+
+    crearAgenda(agenda, callback) {
+        const {
+            id_sucursal,
+            matricula,
+            clasificacion,
+            sobreturnos,
+            dias,
+            horainicio,
+            horaFin,
+            duracion,
+            fechaCreacion,
+            id_doctor
+        } = agenda;
+    
         connection.query(
-            'INSERT INTO agenda (id_sucursal, clasificacion, max_sobreturnos) VALUES (?, ?, ?)',
-            [id_sucursal, clasificacion, max_sobreturnos],
+            `INSERT INTO agenda 
+            (id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor],
             callback
         );
     },
+    
 
     actualizarAgenda(id, { id_sucursal, clasificacion, max_sobreturnos, doctor_especialidad_id }, callback) {
         connection.query(

@@ -10,6 +10,13 @@ Doctor.getAll = (callback) => {
     });
 };
 
+// Listar doctores activos
+Doctor.obtenerDoctores = (callback) => {
+    connection.query('SELECT de.matricula, d.nombre_completo FROM doctores_especialidad de JOIN doctores d ON de.id_doctor = d.id', (err, results) => {
+        callback(err, results);
+    });
+};
+
 // Crear doctor
 Doctor.create = (nombre, telefono, dni, mail, domicilio, callback) => {
     connection.query('INSERT INTO doctores (nombre_completo, telefono, dni, mail, domicilio) VALUES (?, ?, ?, ?, ?)', [nombre, telefono, dni, mail, domicilio], (err, results) => {

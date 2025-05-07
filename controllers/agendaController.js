@@ -1,5 +1,6 @@
 const AgendaModel = require('../models/modeloAgenda');
 const PacienteModel = require('../models/modeloPaciente');
+const DoctorModel = require('../models/modeloDoctor');
 
 
 exports.listarAgendas = (req, res) => {
@@ -50,15 +51,60 @@ exports.vistaCrear = (req, res) => {
     res.render('agenda/crearAgenda');
 };
 
-exports.crearAgenda = (req, res) => {
-    const { id_sucursal, clasificacion, max_sobreturnos } = req.body;
-    AgendaModel.crearAgenda({ id_sucursal, clasificacion, max_sobreturnos }, (err) => {
+
+
+exports.formularioCrearAgenda = (req, res) => {
+    DoctorModel.obtenerDoctores((err, doctores) => {
         if (err) {
+            return res.status(500).send('Error al cargar doctores');
+        }
+    AgendaModel.obtenerSucursales((err, sucursales) => {
+        if (err) {
+            return res.status(500).send('Error al cargar sucursales');
+        }
+        res.render('agenda/crearAgenda', { doctores, sucursales });
+    });
+});
+};
+
+exports.crearAgenda = (req, res) => {
+    
+    const {
+        id_sucursal,
+        matricula,
+        clasificacion,
+        sobreturnos,
+        dias,
+        horainicio,
+        horaFin,
+        duracion,
+        fechaCreacion,
+        id_doctor
+    } = req.body;
+
+    const agenda = {
+        id_sucursal,
+        matricula,
+        clasificacion,
+        sobreturnos: parseInt(sobreturnos),
+        dias,
+        horainicio,
+        horaFin,
+        duracion,
+        fechaCreacion,
+        id_doctor
+    };
+
+    AgendaModel.crearAgenda(agenda, (err) => {
+        if (err) {
+            console.error('Error al crear agenda:', err);
             return res.status(500).json({ error: 'Error al crear agenda' });
         }
-        res.redirect('/agendas'); // Redirige a la lista de agendas después de crear
+        res.redirect('/agendas/');
+        
     });
 };
+
 
 exports.vistaActualizar = (req, res) => {
     const id = req.params.id;
