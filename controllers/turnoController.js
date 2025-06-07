@@ -1,8 +1,7 @@
 const turnoModel = require('../models/modeloTurno');
 const pacienteModel = require('../models/modeloPaciente');
 
-// Renderizar la vista para agendar un turno
-// Renderizar la vista para listar turnos (solo futuros o de hoy)
+
 exports.listarTurnos = (req, res) => {
     try {
         const fechaActual = new Date();

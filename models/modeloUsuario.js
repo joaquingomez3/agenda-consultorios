@@ -1,8 +1,8 @@
 const connection = require('../config/baseDatos');
 
 const Usuario = {};
-Usuario.create = (nombre_usuario, contrasenia, rol, callback) => {
-    connection.query('INSERT INTO usuario (nombre_usuario, contrasenia, rol) VALUES (?, ?, ?)', [nombre_usuario, contrasenia, rol], (err, results) => {
+Usuario.create = (dni, nombre_usuario, contrasenia, rol, callback) => {
+    connection.query('INSERT INTO usuario (dni, nombre_usuario, contrasenia, rol) VALUES (?, ?, ?, ?)', [dni, nombre_usuario, contrasenia, rol], (err, results) => {
         callback(err, results);
     });
 };
@@ -16,5 +16,15 @@ Usuario.buscarPorNombre = (nombre_usuario, callback) => {
         });
     });
 };
+Usuario.buscarPorId = (dni, callback) => {
+   connection.query('SELECT * FROM usuario WHERE dni = ?', [dni], (err, results) => {
+        callback(err, results[0]);
+    });
+};
 
+Usuario.editar = (dni, nombre_usuario, callback) => {
+    connection.query('UPDATE usuario SET nombre_usuario = ?  WHERE dni = ?', [nombre_usuario, dni], (err, results) => {
+        callback(err, results);
+    });
+}
 module.exports = Usuario;

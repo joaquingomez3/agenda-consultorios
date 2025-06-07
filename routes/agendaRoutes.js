@@ -12,6 +12,7 @@ router.post('/', agendaController.crearAgenda);
 router.get('/editar/:id', chequeo, agendaController.vistaActualizar);
 router.post('/actualizar', agendaController.actualizarAgenda);
 router.get('/:id/turnos', chequeo, agendaController.verTurnosAgenda);
+router.get('/:id/turnos/:fecha', chequeo, agendaController.turnosFechaSeleccionada);
 router.get('/asignar/:turnoId', chequeo, agendaController.mostrarAsignacionPaciente);
 router.post('/asignar', agendaController.asignarPaciente);
 

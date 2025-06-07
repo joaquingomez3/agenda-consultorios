@@ -8,14 +8,15 @@ block contenido
                 .d-flex.justify-content-between.mb-3
                     h2 Lista de Turnos
                     
-                    form.form-inline
-                        input.form-control.mr-sm-2(type="search", placeholder="Buscar turno...", aria-label="Buscar")
-                        button.btn.btn-outline-primary(type="submit") Buscar
+                    .form-group
+                        label(for="fech") Fecha
+                        input.form-control(type="date" id="fecha" name="fecha")
+                        button.btn.btn-success(type="button", onclick=`buscarTurnos(${agenda.id})`) Buscar
+
                 
                 table.table.table-hover.table-striped.table-bordered
                     thead.thead-dark
                         tr
-                            
                             th Paciente
                             th Doctor 
                             th Fecha
@@ -26,7 +27,6 @@ block contenido
                             th Acciones
                     each turno in turnos
                         tr
-                           
                             td= turno.paciente_nombre || 'Sin asignar'
                             td= turno.doctor_nombre
                             td= formatearFecha(turno.fechaTurno)
@@ -40,6 +40,20 @@ block contenido
                             td= turno.motivo || 'No especificado'
                             td
                                a.btn.btn-sm.btn-primary(href=`/agendas/asignar/${turno.turno_id}`) Reservar
+    script.
+        function buscarTurnos(agendaId) {
+            const fecha = document.getElementById('fecha').value;
+            if (!fecha) {
+                alert("Por favor, seleccioná una fecha.");
+                return;
+            }
 
+            const hoy = new Date().toISOString().split('T')[0];
+            if (fecha < hoy) {
+                alert("No podés buscar turnos en una fecha pasada.");
+                return;
+            }
 
-       
+            // Redireccionar a la ruta con el ID de la agenda y la fecha seleccionada
+            window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
+        }                           

@@ -10,7 +10,16 @@ Paciente.getAll = (callback) => {
     });
 };
 
-// Crear paciente
+Paciente.crearParaUsuario = (nombre, dni, obraSocial, contacto, callback) => {
+    connection.query(
+        'INSERT INTO paciente (nombre_completo, dni, obra_social, datos_contacto) VALUES (?, ?, ?, ?)', 
+        [nombre, dni, obraSocial, contacto], 
+        (err, results) => {
+            callback(err, results);
+        }
+    );
+};
+
 Paciente.create = (nombre, dni, motivoConsulta, obraSocial, contacto, callback) => {
     connection.query(
         'INSERT INTO paciente (nombre_completo, dni, motivo_consulta, obra_social, datos_contacto) VALUES (?, ?, ?, ?, ?)', 
@@ -21,6 +30,11 @@ Paciente.create = (nombre, dni, motivoConsulta, obraSocial, contacto, callback) 
     );
 };
 
+Paciente.obtenerPorDni = (dni, callback) => {
+    connection.query('SELECT * FROM paciente WHERE dni = ?', [dni], (err, results) => {
+        callback(err, results[0]);
+    });
+};
 // Obtener paciente por ID
 Paciente.getById = (id, callback) => {
     connection.query('SELECT * FROM paciente WHERE id = ?', [id], (err, results) => {
@@ -39,7 +53,15 @@ Paciente.update = (id, nombre, dni, motivoConsulta, obraSocial, contacto, callba
     );
 };
 
-
+Paciente.editar = (nombre, dni, obraSocial, tel, callback) => {
+    connection.query(
+        'UPDATE paciente SET nombre_completo = ?, obra_social = ?, datos_contacto = ? WHERE dni = ?', 
+        [nombre, obraSocial, tel, dni], 
+        (err, results) => {
+            callback(err, results);
+        }
+    );
+};
 
 // Buscar paciente por DNI o nombre
 Paciente.buscarPacientePorDniONombre = async (dni, nombre) => {

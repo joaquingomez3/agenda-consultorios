@@ -13,8 +13,8 @@ block contenido
 
         h1.text-center Bienvenido a la Agenda de Consultorios Médicos
         p.text-center Seleccione una opción a continuación:
-
-        .row.mt-4
+        
+        .row.justify-content-center.mt-4
             if usuario.rol === 'Secretaria'
                 .col-md-4
                     .card.card-hover.shadow-sm.border-0
@@ -54,10 +54,18 @@ block contenido
                             a(href="/doctores/" class="btn btn-primary btn-lg w-100") Ir a Doctores            
 
             if usuario.rol === 'usuario'
-                .col-md-4
-                    .card.card-hover.shadow-sm.border-0
-                        .card-body.text-center
-                            img(src="/imagenes/doctores.jpg" alt="Icono de Doctores" class="mb-3" width="80") 
-                            h5.card-title Doctores
-                            p.card-text Aquí puedes gestionar la información de los doctores.
-                            a(href="/doctores/" class="btn btn-primary btn-lg w-100") Ir a Doctores
+                
+                    .col-md-4
+                        .card.card-hover.shadow-sm.border-0
+                            .card-body.text-center
+                                img(src="/imagenes/calendario.jpg" alt="Icono de Agenda" class="mb-3" width="80")
+                                h5.card-title Agendar turno
+                                p.card-text Aquí puedes ver y gestionar las citas médicas.
+                                a(href="/agendas/" class="btn btn-primary btn-lg w-100") Ir a Agenda
+                    .col-md-4
+                        .card.card-hover.shadow-sm.border-0
+                            .card-body.text-center
+                                img(src="/imagenes/pacientes.jpg" alt="Icono de Pacientes" class="mb-3" width="80")
+                                h5.card-title Mi Perfil
+                                p.card-text Aquí puedes ver y gestionar datos de tu perfil.
+                                a(href=`usuarios/editar/${usuario.dni}` class="btn btn-primary btn-lg w-100") Ir a Perfil

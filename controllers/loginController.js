@@ -27,10 +27,10 @@ exports.procesarLogin = (req, res) => {
         if (!coincide) {
             return res.render('login', { error: 'Contraseña incorrecta' });
         }
-
+        
         // Generar el token JWT
-        const token = jwt.sign({ id: usuario.id, username: usuario.nombre_usuario, rol: usuario.rol }, 'clave_secreta', { expiresIn: '1h' });
-
+        const token = jwt.sign({ dni: usuario.dni, username: usuario.nombre_usuario, rol: usuario.rol }, 'clave_secreta', { expiresIn: '1h' });
+        
         // Guardar el token en una cookie
         res.cookie('jwt', token, { httpOnly: true, maxAge: 3600000 });
 

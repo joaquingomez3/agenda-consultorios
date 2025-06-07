@@ -1,4 +1,4 @@
-// controllers/pacientesController.js
+
 const Paciente = require('../models/modeloPaciente');
 
 exports.listarPacientes = (req, res) => {

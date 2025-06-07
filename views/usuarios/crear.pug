@@ -12,6 +12,18 @@ block contenido
       .col-md-6
         form(method="POST" action="/usuarios/crear")
           div.form-group
+            label(for="nombre") Nombre Completo
+            input#nombre.form-control(type="text" name="nombre" required)
+          div.form-group
+            label(for="dni") DNI
+            input#dni.form-control(type="text" name="dni" required) 
+          div.form-group
+            label(for="obraSocial") Obra Social
+            input#obraSocial.form-control(type="text" name="obraSocial" required)
+          div.form-group
+            label(for="tel") Telefono
+            input#tel.form-control(type="tel" name="tel" required)    
+          div.form-group
             label(for="nombre") Nombre Usuario
             input#nombre.form-control(
               type="text",

@@ -68,30 +68,147 @@ const Agenda = {
         );
     },
 
-    verTurnosAgenda(id, callback) {
-        const hoy = moment().format('YYYY-MM-DD'); // Fecha actual en formato YYYY-MM-DD
+    // verTurnosAgenda(id,  callback) {
+    //     const hoy = moment().format('YYYY-MM-DD'); // Fecha actual en formato YYYY-MM-DD
         
+    //     connection.query(`SELECT t.id AS turno_id,
+    //    p.nombre_completo AS paciente_nombre,
+    //    t.fechaTurno,
+    //    t.inicio,
+    //    t.fin,
+    //    e.nombre_estado AS estado_turno,
+    //    t.motivo,
+    //    d.nombre_completo AS doctor_nombre,  -- Nombre del doctor en lugar de la matrícula
+    //    a.dias,
+    //    a.horaInicio AS agenda_horaInicio,
+    //    a.horaFin AS agenda_horaFin,
+    //    a.duracion,
+    //    a.clasificacion,
+    //    a.sobreturnos
+    //    FROM turno t
+    //    JOIN agenda a ON t.id_agenda = a.id
+    //    LEFT JOIN paciente p ON t.id_paciente = p.id
+    //    JOIN estadoturno e ON t.estado_turno = e.id
+    //    JOIN doctores_especialidad de ON a.matricula = de.matricula  
+    //    JOIN doctores d ON de.id_doctor = d.id 
+    //    WHERE a.id = ? AND t.fechaTurno = ? ` , [id, hoy], callback); 
+    // },
+verTurnosAgenda(id, fecha, callback) {
+    connection.query(`
+        SELECT t.id AS turno_id,
+               p.nombre_completo AS paciente_nombre,
+               t.fechaTurno,
+               t.inicio,
+               t.fin,
+               e.nombre_estado AS estado_turno,
+               t.motivo,
+               d.nombre_completo AS doctor_nombre,
+               a.dias,
+               a.horaInicio AS agenda_horaInicio,
+               a.horaFin AS agenda_horaFin,
+               a.duracion,
+               a.clasificacion,
+               a.sobreturnos
+        FROM turno t
+        JOIN agenda a ON t.id_agenda = a.id
+        LEFT JOIN paciente p ON t.id_paciente = p.id
+        JOIN estadoturno e ON t.estado_turno = e.id
+        JOIN doctores_especialidad de ON a.matricula = de.matricula  
+        JOIN doctores d ON de.id_doctor = d.id 
+        WHERE a.id = ? AND t.fechaTurno = ?`, [id, fecha], callback);
+},
+
+
+insertarTurnos(id, fechaSeleccionada, callback) {
+    let inicio;
+    let fin;
+    let duracion = 30;
+
+    // Verifica si ya existen turnos para esa fecha y agenda
+    connection.query(
+        'SELECT COUNT(*) AS cantidad FROM turno WHERE fechaTurno = ? AND id_agenda = ?',
+        [fechaSeleccionada, id],
+        (err, results) => {
+            if (err) return callback(err);
+
+            if (results[0].cantidad === 0) {
+                // Definir rangos según la agenda
+                if (id == 1) {
+                    inicio = moment(fechaSeleccionada + ' 07:00');
+                    fin = moment(fechaSeleccionada + ' 12:00');
+                } else if (id == 2) {
+                    inicio = moment(fechaSeleccionada + ' 14:00');
+                    fin = moment(fechaSeleccionada + ' 20:00');
+                } else if (id == 3) {
+                    inicio = moment(fechaSeleccionada + ' 07:00');
+                    fin = moment(fechaSeleccionada + ' 12:00');
+                } else {
+                    return callback(new Error('ID de agenda no válido'));
+                }
+
+                const turnos = [];
+                for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+                    turnos.push([
+                        id,
+                        fechaSeleccionada,
+                        m.format('HH:mm:ss'),
+                        m.clone().add(duracion, 'minutes').format('HH:mm:ss'),
+                        2 // Estado: 2 = Libre
+                    ]);
+                }
+                console.log(turnos);
+                // Insertar nuevos turnos
+                connection.query(
+                    'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+                    [turnos],
+                    (insertErr, insertResults) => {
+                        if (insertErr) return callback(insertErr);
+
+                        // Limpiar turnos anteriores a hoy
+                        connection.query(
+                            'DELETE FROM turno WHERE fechaTurno < CURDATE() AND id_agenda = ?',
+                            [id],
+                            callback
+                        );
+                    }
+                );
+            } else {
+                connection.query(
+                    'SELECT inicio, fin, estado_turno FROM turno WHERE fechaTurno = ? AND id_agenda = ? ORDER BY inicio',
+                    [fechaSeleccionada, id],
+                    (selectErr, existingTurnos) => {
+                        if (selectErr) return callback(selectErr);
+                        callback(null, existingTurnos); // Enviar los turnos existentes
+                    }
+                );
+            }
+        }
+    );
+},
+
+
+    turnosPorFecha(id, fechaSeleccionada, callback) {
         connection.query(`SELECT t.id AS turno_id,
-       p.nombre_completo AS paciente_nombre,
-       t.fechaTurno,
-       t.inicio,
-       t.fin,
-       e.nombre_estado AS estado_turno,
-       t.motivo,
-       d.nombre_completo AS doctor_nombre,  -- Nombre del doctor en lugar de la matrícula
-       a.dias,
-       a.horaInicio AS agenda_horaInicio,
-       a.horaFin AS agenda_horaFin,
-       a.duracion,
-       a.clasificacion,
-       a.sobreturnos
-       FROM turno t
-       JOIN agenda a ON t.id_agenda = a.id
-       LEFT JOIN paciente p ON t.id_paciente = p.id
-       JOIN estadoturno e ON t.estado_turno = e.id
-       JOIN doctores_especialidad de ON a.matricula = de.matricula  
-       JOIN doctores d ON de.id_doctor = d.id 
-       WHERE a.id = ? AND t.fechaTurno = ? ` , [id, hoy], callback); 
+            p.nombre_completo AS paciente_nombre,
+            t.fechaTurno,
+            t.inicio,
+            t.fin,
+            e.nombre_estado AS estado_turno,
+            t.motivo,
+            d.nombre_completo AS doctor_nombre,  -- Nombre del doctor en lugar de la matrícula
+            a.dias,
+            a.horaInicio AS agenda_horaInicio,
+            a.horaFin AS agenda_horaFin,
+            a.duracion,
+            a.clasificacion,
+            a.sobreturnos
+            FROM turno t
+            JOIN agenda a ON t.id_agenda = a.id
+            LEFT JOIN paciente p ON t.id_paciente = p.id
+            JOIN estadoturno e ON t.estado_turno = e.id
+            JOIN doctores_especialidad de ON a.matricula = de.matricula  
+            JOIN doctores d ON de.id_doctor = d.id 
+            WHERE a.id = ? AND t.fechaTurno = ? ` , [id, fechaSeleccionada], callback);
     },
 
     crearTurnosDiarios(id,callback) {

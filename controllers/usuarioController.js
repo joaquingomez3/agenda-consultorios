@@ -1,4 +1,5 @@
 const Usuario = require('../models/modeloUsuario');
+const Paciente = require('../models/modeloPaciente');
 const bcrypt = require('bcrypt');
 exports.mostrarFormulario = (req, res) => {
     res.render('usuarios/crear');
@@ -6,12 +7,12 @@ exports.mostrarFormulario = (req, res) => {
 
 exports.crearUsuario = async (req, res) => {
     try {
-        const { nombre_usuario, contrasenia, nuevaContrasenia } = req.body;
+        const {nombre, dni, obraSocial, tel, nombre_usuario, contrasenia, nuevaContrasenia } = req.body;
         const errores = [];
         const rol = 'usuario';
 
         // aca verificamos que los campos no esten vacios
-        if (!nombre_usuario || !contrasenia || !nuevaContrasenia) {
+        if (!nombre_usuario || !contrasenia || !nuevaContrasenia || !nombre || !dni || !obraSocial || !tel) {
             errores.push('Todos los campos son obligatorios');
         }
 
@@ -29,7 +30,7 @@ exports.crearUsuario = async (req, res) => {
             errores.push('Las contraseñas no coinciden');
         }
 
-        // verificamos que el usuario no exista
+        
         const usuarioExistente = await Usuario.buscarPorNombre(nombre_usuario);
         if (usuarioExistente) {
             errores.push('El nombre de usuario ya existe');
@@ -44,7 +45,15 @@ exports.crearUsuario = async (req, res) => {
         }
 
         const contraseniaHash = await bcrypt.hash(contrasenia, 10);
-        Usuario.create(nombre_usuario, contraseniaHash, rol, (err, results) => {
+        Paciente.crearParaUsuario(nombre, dni, obraSocial, tel, (err, results) => {
+            if (err) {
+                console.error('Error al crear paciente:', err);
+                return res.render('usuarios/crear', {
+                    errores: ['Error al crear paciente']
+                });
+            }
+        });
+        Usuario.create(dni, nombre_usuario, contraseniaHash, rol, (err, results) => {
             if (err) {
                 console.error('Error al crear usuario:', err);
                 return res.render('usuarios/crear', {
@@ -59,3 +68,53 @@ exports.crearUsuario = async (req, res) => {
         res.render('usuarios/crear', { errores: ['Ocurrió un error inesperado'] });
     }
 };
+
+exports.mostrarFormularioEditar = (req, res) => {
+    const dni = req.params.dni;
+    
+
+    Paciente.obtenerPorDni(dni, (err, paciente) => {
+        if (err) {
+            console.error('Error al obtener los datos del paciente:', err);
+            return res.render('usuarios/editar', { errores: ['Error al obtener los datos del paciente'] });
+        }
+        if (!paciente) {
+            return res.render('usuarios/editar', { errores: ['Paciente no encontrado'] });
+        }
+
+        Usuario.buscarPorId(dni, (err, usuario) => {
+            if (err) {
+                console.error('Error al buscar usuario:', err);
+                return res.render('usuarios/editar', { errores: ['Error al buscar usuario'] });
+            }
+            if (!usuario) {
+                return res.render('usuarios/editar', { errores: ['Usuario no encontrado'] });
+            }
+
+            
+            res.render('usuarios/perfil', { usuario, paciente });
+        });
+    });
+};
+
+exports.editarUsuario = (req, res) => {
+    const nombre_usuario = req.body.nombreUsuario;
+    
+    const { nombre, dni, obraSocial, tel } = req.body;
+console.log(nombre_usuario, dni, nombre, obraSocial, tel);
+    Paciente.editar(nombre, dni, obraSocial, tel, (err, results) => {
+        if (err) {
+            console.error('Error al editar paciente:', err);
+            return res.render('usuarios/editar', { errores: ['Error al editar paciente'] });
+        }
+    });
+
+    Usuario.editar(dni, nombre_usuario, (err, results) => {
+        if (err) {
+            console.error('Error al editar usuario:', err);
+            return res.render('usuarios/editar', { errores: ['Error al editar usuario'] });
+        }
+        res.redirect('/inicio');
+    });
+
+}

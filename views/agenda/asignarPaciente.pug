@@ -5,7 +5,8 @@ block contenido
     .container.mt-5
         form(method="post", action="/agendas/asignar")
             input(type="hidden", name="turno_id", value=turnoId)
-            
+            input(type="hidden", name="returnUrl", value=returnUrl)
+            input(type="hidden", name="agendaId", value=agendaId)
             .mb-3
                 label(for="paciente_id") Seleccionar Paciente
                 select.form-control(name="paciente_id", required)
