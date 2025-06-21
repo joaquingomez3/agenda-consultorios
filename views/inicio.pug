@@ -13,7 +13,9 @@ block contenido
 
         h1.text-center Bienvenido a la Agenda de Consultorios Médicos
         p.text-center Seleccione una opción a continuación:
-        
+        if success
+            .alert.alert-success.alert-dismissible.fade.show.mt-3.mb-0.p-2.text-center.small#mensaje-exito(role="alert")= success
+
         .row.justify-content-center.mt-4
             if usuario.rol === 'Secretaria'
                 .col-md-4
@@ -69,3 +71,10 @@ block contenido
                                 h5.card-title Mi Perfil
                                 p.card-text Aquí puedes ver y gestionar datos de tu perfil.
                                 a(href=`usuarios/editar/${usuario.dni}` class="btn btn-primary btn-lg w-100") Ir a Perfil
+    script.
+        setTimeout(() => {
+            const mensaje = document.getElementById('mensaje-exito');
+            if (mensaje) {
+                mensaje.style.display = 'none';
+            }
+        }, 4000);

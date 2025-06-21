@@ -101,7 +101,7 @@ exports.editarUsuario = (req, res) => {
     const nombre_usuario = req.body.nombreUsuario;
     
     const { nombre, dni, obraSocial, tel } = req.body;
-console.log(nombre_usuario, dni, nombre, obraSocial, tel);
+
     Paciente.editar(nombre, dni, obraSocial, tel, (err, results) => {
         if (err) {
             console.error('Error al editar paciente:', err);
@@ -114,7 +114,7 @@ console.log(nombre_usuario, dni, nombre, obraSocial, tel);
             console.error('Error al editar usuario:', err);
             return res.render('usuarios/editar', { errores: ['Error al editar usuario'] });
         }
-        res.redirect('/inicio');
+        res.redirect('/inicio?success=Perfil actualizado correctamente');
     });
 
 }

@@ -4,11 +4,12 @@ const DoctorModel = require('../models/modeloDoctor');
 const moment = require('moment');
 
 exports.listarAgendas = (req, res) => {
+
     AgendaModel.listarAgendas((err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Error al listar agendas' });
         }
-        res.render('agenda/listarAgendas', { agendas: results });
+        res.render('agenda/listarAgendas', { agendas: results, usuario: req.user });
     });
 };
 exports.generarTurnosAgendas = (req, res) => {
@@ -147,7 +148,7 @@ exports.verTurnosAgenda = (req, res) => {
             return res.status(500).json({ error: 'Error al traer turnos' });
         }
         
-        res.render('agenda/verTurnosAgenda', { turnos: results, formatearFecha, agenda: {id} });
+        res.render('agenda/verTurnosAgenda', { turnos: results, formatearFecha, agenda: {id}, usuario: req.user  });
     });
 };
 
@@ -160,14 +161,22 @@ exports.turnosFechaSeleccionada = (req, res) => {
             console.error('Error al insertar turnos:', err);
             return res.status(500).json({ error: 'Error al insertar turnos' });
         }
-    })
-    AgendaModel.turnosPorFecha(id, fechaSeleccionada, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error al traer turnos' });
-        }
-        res.render('agenda/verTurnosAgenda', { turnos: results, formatearFecha, agenda: {id} });
+
+        // Solo continuar si no hubo error
+        AgendaModel.turnosPorFecha(id, fechaSeleccionada, (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error al traer turnos' });
+            }
+
+            res.render('agenda/verTurnosAgenda', {
+                turnos: results,
+                formatearFecha,
+                agenda: { id }
+            });
+        });
     });
 };
+
 exports.mostrarAsignacionPaciente = (req, res) => {
     const turnoId = req.params.turnoId;
     

@@ -17,13 +17,15 @@ block contenido
                 table.table.table-hover.table-striped.table-bordered
                     thead.thead-dark
                         tr
-                            th Paciente
+                            if usuario.rol != 'usuario'
+                                th Paciente
                             th Doctor 
                             th Fecha
                             th Hora de Inicio
                             th Hora de Fin
                             th Estado
-                            th Motivo
+                            if usuario.rol != 'usuario'
+                                th Motivo
                             th Acciones
                     each turno in turnos
                         tr
@@ -39,7 +41,9 @@ block contenido
                                     span.badge.text-bg-warning Reservado
                             td= turno.motivo || 'No especificado'
                             td
-                               a.btn.btn-sm.btn-primary(href=`/agendas/asignar/${turno.turno_id}`) Reservar
+                                a.btn.btn-sm.btn-primary(href=`/agendas/asignar/${turno.turno_id}`) Reservar
+                h2 Sobreturnos
+                
     script.
         function buscarTurnos(agendaId) {
             const fecha = document.getElementById('fecha').value;

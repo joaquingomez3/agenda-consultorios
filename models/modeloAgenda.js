@@ -50,13 +50,16 @@ const Agenda = {
             id_doctor
         } = agenda;
     
-        connection.query(
-            `INSERT INTO agenda 
-            (id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor],
-            callback
-        );
+         connection.query(
+        `INSERT INTO agenda 
+        (id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id_sucursal, matricula, clasificacion, sobreturnos, dias, horainicio, horaFin, duracion, fechaCreacion, id_doctor],
+        (err, result) => {
+            if (err) return callback(err);
+            callback(null, result.insertId); 
+        }
+    );
     },
     
 
@@ -119,69 +122,110 @@ verTurnosAgenda(id, fecha, callback) {
 },
 
 
-insertarTurnos(id, fechaSeleccionada, callback) {
-    let inicio;
-    let fin;
-    let duracion = 30;
+// insertarTurnos(id, fechaSeleccionada, callback) {
+//     let inicio;
+//     let fin;
+//     let duracion = 30;
 
-    // Verifica si ya existen turnos para esa fecha y agenda
+//     // Verifica si ya existen turnos para esa fecha y agenda
+//     connection.query(
+//         'SELECT COUNT(*) AS cantidad FROM turno WHERE fechaTurno = ? AND id_agenda = ?',
+//         [fechaSeleccionada, id],
+//         (err, results) => {
+//             if (err) return callback(err);
+
+//             if (results[0].cantidad === 0) {
+//                 // Definir rangos según la agenda
+//                 if (id == 1) {
+//                     inicio = moment(fechaSeleccionada + ' 07:00');
+//                     fin = moment(fechaSeleccionada + ' 12:00');
+//                 } else if (id == 2) {
+//                     inicio = moment(fechaSeleccionada + ' 14:00');
+//                     fin = moment(fechaSeleccionada + ' 20:00');
+//                 } else if (id == 3) {
+//                     inicio = moment(fechaSeleccionada + ' 07:00');
+//                     fin = moment(fechaSeleccionada + ' 12:00');
+//                 } else {
+//                     return callback(new Error('ID de agenda no válido'));
+//                 }
+
+//                 const turnos = [];
+//                 for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+//                     turnos.push([
+//                         id,
+//                         fechaSeleccionada,
+//                         m.format('HH:mm:ss'),
+//                         m.clone().add(duracion, 'minutes').format('HH:mm:ss'),
+//                         2 // Estado: 2 = Libre
+//                     ]);
+//                 }
+//                 console.log(turnos);
+//                 // Insertar nuevos turnos
+//                 connection.query(
+//                     'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+//                     [turnos],
+//                     (insertErr, insertResults) => {
+//                         if (insertErr) return callback(insertErr);
+
+//                         // Limpiar turnos anteriores a hoy
+//                         connection.query(
+//                             'DELETE FROM turno WHERE fechaTurno < CURDATE() AND id_agenda = ?',
+//                             [id],
+//                             callback
+//                         );
+//                     }
+//                 );
+//             } else {
+//                 connection.query(
+//                     'SELECT inicio, fin, estado_turno FROM turno WHERE fechaTurno = ? AND id_agenda = ? ORDER BY inicio',
+//                     [fechaSeleccionada, id],
+//                     (selectErr, existingTurnos) => {
+//                         if (selectErr) return callback(selectErr);
+//                         callback(null, existingTurnos); // Enviar los turnos existentes
+//                     }
+//                 );
+//             }
+//         }
+//     );
+// },
+insertarTurnos(id, fechaSeleccionada, callback) {
     connection.query(
-        'SELECT COUNT(*) AS cantidad FROM turno WHERE fechaTurno = ? AND id_agenda = ?',
-        [fechaSeleccionada, id],
+        'SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?',
+        [id],
         (err, results) => {
             if (err) return callback(err);
+            if (results.length === 0) return callback(new Error('Agenda no encontrada'));
 
-            if (results[0].cantidad === 0) {
-                // Definir rangos según la agenda
-                if (id == 1) {
-                    inicio = moment(fechaSeleccionada + ' 07:00');
-                    fin = moment(fechaSeleccionada + ' 12:00');
-                } else if (id == 2) {
-                    inicio = moment(fechaSeleccionada + ' 14:00');
-                    fin = moment(fechaSeleccionada + ' 20:00');
-                } else if (id == 3) {
-                    inicio = moment(fechaSeleccionada + ' 07:00');
-                    fin = moment(fechaSeleccionada + ' 12:00');
-                } else {
-                    return callback(new Error('ID de agenda no válido'));
-                }
+            const { horaInicio, horaFin, duracion } = results[0];
 
-                const turnos = [];
-                for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
-                    turnos.push([
-                        id,
-                        fechaSeleccionada,
-                        m.format('HH:mm:ss'),
-                        m.clone().add(duracion, 'minutes').format('HH:mm:ss'),
-                        2 // Estado: 2 = Libre
-                    ]);
-                }
-                console.log(turnos);
-                // Insertar nuevos turnos
-                connection.query(
-                    'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
-                    [turnos],
-                    (insertErr, insertResults) => {
-                        if (insertErr) return callback(insertErr);
+            const inicio = moment(`${fechaSeleccionada} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+            const fin = moment(`${fechaSeleccionada} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
 
-                        // Limpiar turnos anteriores a hoy
-                        connection.query(
-                            'DELETE FROM turno WHERE fechaTurno < CURDATE() AND id_agenda = ?',
-                            [id],
-                            callback
-                        );
-                    }
-                );
-            } else {
-                connection.query(
-                    'SELECT inicio, fin, estado_turno FROM turno WHERE fechaTurno = ? AND id_agenda = ? ORDER BY inicio',
-                    [fechaSeleccionada, id],
-                    (selectErr, existingTurnos) => {
-                        if (selectErr) return callback(selectErr);
-                        callback(null, existingTurnos); // Enviar los turnos existentes
-                    }
-                );
+            const turnos = [];
+            for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+                turnos.push([
+                    id,
+                    fechaSeleccionada,
+                    m.format('HH:mm:ss'),
+                    m.clone().add(duracion, 'minutes').format('HH:mm:ss'),
+                    2 // Estado: Libre
+                ]);
             }
+
+            connection.query(
+                'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+                [turnos],
+                (insertErr, insertResults) => {
+                    if (insertErr) return callback(insertErr);
+
+                    // Limpia turnos anteriores a hoy
+                    connection.query(
+                        'DELETE FROM turno WHERE fechaTurno < CURDATE() AND id_agenda = ?',
+                        [id],
+                        callback
+                    );
+                }
+            );
         }
     );
 },
@@ -211,42 +255,82 @@ insertarTurnos(id, fechaSeleccionada, callback) {
             WHERE a.id = ? AND t.fechaTurno = ? ` , [id, fechaSeleccionada], callback);
     },
 
-    crearTurnosDiarios(id,callback) {
-        let inicio;
-        let fin;
-        let duracion;
-        if (id == 1) {
+//     crearTurnosDiarios(id,callback) {
+//          let inicio;
+//          let fin;
+//          let duracion;
+//          if (id == 1) {
             
-            inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
-            fin = moment().startOf('day').add(12, 'hours'); // 12 PM
-            duracion = 30; // Duración de cada turno en minutos
-        } else if (id == 2) {
+//              inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
+//              fin = moment().startOf('day').add(12, 'hours'); // 12 PM
+//              duracion = 30; // Duración de cada turno en minutos
+//         } else if (id == 2) {
             
-            inicio = moment().startOf('day').add(14, 'hours'); // 14 PM
-            fin = moment().startOf('day').add(20, 'hours'); // 20 PM
-            duracion = 30;
-        } else if (id == 3) {
+//              inicio = moment().startOf('day').add(14, 'hours'); // 14 PM
+//             fin = moment().startOf('day').add(20, 'hours'); // 20 PM
+//             duracion = 30;
+//         } else if (id == 3) {
             
-            inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
-            fin = moment().startOf('day').add(12, 'hours'); // 8 PM
-            duracion = 30;
-        } else {
-            // Maneja el caso en que `id` no sea 1, 2 o 3
-            return callback(new Error('ID de agenda no válido'));
-        }
+//              inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
+//              fin = moment().startOf('day').add(12, 'hours'); // 8 PM
+//             duracion = 30;
+//         } else {
+//            // Maneja el caso en que `id` no sea 1, 2 o 3
+//             return callback(new Error('ID de agenda no válido'));
+//         }
+
+//         const turnos = [];
+//         for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+//             turnos.push([
+//                  id, // id_agenda
+//                  m.format('YYYY-MM-DD'), // fechaTurno
+//                m.format('HH:mm:ss'), // inicio
+//                 m.clone().add(duracion, 'minutes').format('HH:mm:ss'), // fin
+//                 2 // estado_turno (Libre)
+//             ]);
+//         }
+        
+//          // Inserta turnos y elimina turnos anteriores a hoy para esta agenda
+//         connection.query(
+//             'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+//             [turnos],
+//             (insertErr, insertResults) => {
+//                 if (insertErr) return callback(insertErr);
+
+//                 const hoy = moment().format('YYYY-MM-DD');
+//                 connection.query(
+//                     'DELETE FROM turno WHERE fechaTurno < ? AND id_agenda = ?',
+//                     [hoy, id],
+//                     callback
+//                 );
+//             }
+//         );
+
+// },
+crearTurnosDiarios(id, callback) {
+    connection.query('SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?', [id], (err, results) => {
+        if (err) return callback(err);
+        if (results.length === 0) return callback(new Error('Agenda no encontrada'));
+
+        const { horaInicio, horaFin, duracion } = results[0];
+        const inicio = moment(`${moment().format('YYYY-MM-DD')} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+        const fin = moment(`${moment().format('YYYY-MM-DD')} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
+
+
+        const mInicio = moment(inicio);
+        const mFin = moment(fin);
 
         const turnos = [];
-        for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+        for (let m = mInicio.clone(); m.isBefore(mFin); m.add(duracion, 'minutes')) {
             turnos.push([
-                id, // id_agenda
-                m.format('YYYY-MM-DD'), // fechaTurno
-                m.format('HH:mm:ss'), // inicio
-                m.clone().add(duracion, 'minutes').format('HH:mm:ss'), // fin
-                2 // estado_turno (Libre)
-            ]);
+                id,
+                m.format('YYYY-MM-DD'),
+                m.format('HH:mm:ss'),
+                m.clone().add(duracion, 'minutes').format('HH:mm:ss'),
+                2 // estado_turno = Libre
+            ]); 
         }
-        
-        // Inserta turnos y elimina turnos anteriores a hoy para esta agenda
+
         connection.query(
             'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
             [turnos],
@@ -260,8 +344,9 @@ insertarTurnos(id, fechaSeleccionada, callback) {
                     callback
                 );
             }
-        );
-    },
+        ); 
+    });
+},
 
     asignarPacienteATurno(turno_id, paciente_id, motivo, callback) {
         
