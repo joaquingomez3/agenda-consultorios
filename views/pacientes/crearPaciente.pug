@@ -1,34 +1,45 @@
 extends ../layout.pug
-block contenido
-    
-    .container.mt-4
-        .row.justify-content-center
-            .col-md-6
-                if errores
-                    .alert.alert-danger
-                        ul
-                            each error in errores
-                                li= error
-                form(action="/pacientes/" method="post" class="border p-4 rounded bg-light")
-                    
 
-                    .mb-3
-                        label(for="nombre" class="form-label") Nombre Completo:
-                        input(type="text" name="nombre" class="form-control" placeholder="Ingresa el nombre completo")
-                    
-                    .mb-3
-                        label(for="dni" class="form-label") Dni:
-                        input(type="text" name="dni" class="form-control" placeholder="Ingresa en Dni")
-                    
-                    .mb-3
-                        label(for="motivo" class="form-label") Motivo de Consulta:
-                        input(type="text" name="motivoConsulta" class="form-control" placeholder="Ingresa el motivo de consulta")
-                    .mb-3
-                        label(for="obraSocial" class="form-label") Obra Social:
-                        input(type="text" name="obraSocial" class="form-control" placeholder="Ingresa la Obra social")
-                    
-                    .mb-3
-                        label(for="tel" class="form-label") Telefono:
-                        input(type="tel" name="contacto" class="form-control" placeholder="Ingresa el Telefono")
-                    
-                    button(type="submit" class="btn btn-primary w-100") Crear
+block contenido
+    .container.mt-5
+        button.btn.btn-secondary.mb-4(onclick='history.back()')
+            i.bi.bi-arrow-left.me-2
+            | Volver
+
+        .row.justify-content-center
+            .col-md-8.col-lg-6
+                .card.shadow
+                    .card-header.bg-success.text-white.text-center
+                        h4.mb-0 Crear Paciente
+
+                    .card-body
+                        if errores
+                            .alert.alert-danger
+                                ul.mb-0
+                                    each error in errores
+                                        li= error
+
+                        form(action="/pacientes/" method="post")
+                            .mb-3
+                                label.form-label(for="nombre") Nombre Completo:
+                                input.form-control(type="text", name="nombre", id="nombre", placeholder="Ej: Juan Pérez")
+
+                            .mb-3
+                                label.form-label(for="dni") DNI:
+                                input.form-control(type="text", name="dni", id="dni", placeholder="Ej: 30123456")
+
+                            .mb-3
+                                label.form-label(for="motivoConsulta") Motivo de Consulta:
+                                input.form-control(type="text", name="motivoConsulta", id="motivoConsulta", placeholder="Opcional")
+
+                            .mb-3
+                                label.form-label(for="obraSocial") Obra Social:
+                                input.form-control(type="text", name="obraSocial", id="obraSocial", placeholder="Ej: OSDE, IOMA, etc.")
+
+                            .mb-3
+                                label.form-label(for="contacto") Teléfono:
+                                input.form-control(type="tel", name="contacto", id="contacto", placeholder="Ej: 2664-XXXXXX")
+
+                            button.btn.btn-success.w-100(type="submit")
+                                i.bi.bi-person-plus-fill.me-1
+                                | Crear Paciente

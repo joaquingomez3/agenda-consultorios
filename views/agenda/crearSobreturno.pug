@@ -1,0 +1,36 @@
+extends ../layout.pug
+
+block contenido
+    .container.mt-5
+        .card.shadow
+            .card-header.bg-primary.text-white
+                h3.mb-0.text-center Crear Sobreturno y Asignar Paciente
+
+            .card-body
+                form(method="POST", action=`/agendas/${agenda.id}/sobreturnos/crear`)
+                    .mb-3
+                        label.form-label(for="fecha") Fecha:
+                        input.form-control(type="date", name="fecha", required)
+
+                    .mb-3
+                        label.form-label(for="inicio") Hora de inicio:
+                        input.form-control(type="time", name="inicio", required)
+
+                    .mb-3
+                        label.form-label(for="paciente_id") Paciente:
+                        select.form-select(name="paciente_id", required)
+                            option(value="") -- Seleccionar paciente --
+                            each paciente in pacientes
+                                option(value=paciente.id)= paciente.nombre_completo
+
+                    .mb-3
+                        label.form-label(for="motivo") Motivo de consulta:
+                        input.form-control(type="text", name="motivo", placeholder="Opcional")
+
+                    button.btn.btn-success.mt-3(type="submit")
+                        i.bi.bi-plus-circle.me-1
+                        | Crear Sobreturno
+
+                a.btn.btn-outline-secondary.mt-4(href="/agendas")
+                    i.bi.bi-arrow-left-circle.me-1
+                    | Volver

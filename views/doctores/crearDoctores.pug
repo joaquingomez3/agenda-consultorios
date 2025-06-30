@@ -1,32 +1,45 @@
 extends ../layout.pug
+
 block contenido
+    .container.mt-5
+        button.btn.btn-secondary.mb-4(onclick='history.back()')
+            i.bi.bi-arrow-left.me-2
+            | Volver
 
-    .container
         .row.justify-content-center
-            .col-md-6
-                if errores
-                    .alert.alert-danger
-                        ul
-                            each error in errores
-                                li= error
-                form(action="/doctores/" method="post" class="border p-4 rounded bg-light")
-                    .mb-3
-                        label(for="nombre" class="form-label") Nombre Completo:
-                        input(type="text" name="nombre" class="form-control" placeholder="Ingresa el nombre completo")
-                    .mb-3
-                        label(for="telefono" class="form-label") Telefono:
-                        input(type="text" name="telefono" class="form-control"  placeholder="Ingresa el telefono")
-                    .mb-3
-                        label(for="dni" class="form-label") Dni:
-                        input(type="text" name="dni" class="form-control"  placeholder="Ingresa el DNI")
-                    .mb-3
-                        label(for="mail" class="form-label") Mail:
-                        input(type="text" name="mail" class="form-control"  placeholder="Ingresa el Correo")
-                    .mb-3
-                        label(for="domicilio" class="form-label") Domicilio:
-                        input(type="text" name="domicilio" class="form-control"  placeholder="Ingresa el Domicilio")
-                    
-                    button(type="submit" class="btn btn-primary w-100") Agregar
+            .col-md-8.col-lg-6
+                .card.shadow
+                    .card-header.bg-success.text-white.text-center
+                        h4.mb-0 Agregar Doctor
 
+                    .card-body
+                        if errores
+                            .alert.alert-danger
+                                ul.mb-0
+                                    each error in errores
+                                        li= error
 
-            
+                        form(action="/doctores/" method="post")
+                            .mb-3
+                                label.form-label(for="nombre") Nombre Completo:
+                                input.form-control(type="text", name="nombre", id="nombre", placeholder="Ej: Dra. María López")
+
+                            .mb-3
+                                label.form-label(for="telefono") Teléfono:
+                                input.form-control(type="text", name="telefono", id="telefono", placeholder="Ej: 2664-XXXXXX")
+
+                            .mb-3
+                                label.form-label(for="dni") DNI:
+                                input.form-control(type="text", name="dni", id="dni", placeholder="Ej: 30123456")
+
+                            .mb-3
+                                label.form-label(for="mail") Correo Electrónico:
+                                input.form-control(type="text", name="mail", id="mail", placeholder="Ej: doctor@email.com")
+
+                            .mb-3
+                                label.form-label(for="domicilio") Domicilio:
+                                input.form-control(type="text", name="domicilio", id="domicilio", placeholder="Ej: Av. San Martín 123")
+
+                            button.btn.btn-success.w-100(type="submit")
+                                i.bi.bi-person-plus-fill.me-1
+                                | Agregar Doctor

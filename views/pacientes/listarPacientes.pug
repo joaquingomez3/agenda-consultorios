@@ -1,27 +1,42 @@
 extends ../layout.pug
+
 block contenido
+    .container-fluid.mt-4
+        .mx-auto(style="width: 90%;")
+            button.btn.btn-secondary.mb-3(onclick='history.back()')
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
-    a(href="./Crear" class="btn btn-success") Crear Paciente
-    if mensaje 
-        .alert.alert-success#alerta-exito
-            h4= mensaje
+            h1.text-center.mb-4.text-primary.fw-bold.display-5 Lista de Pacientes
 
-    table(class="table table-striped")
-        thead 
-            tr 
-                th Nombre 
-                th Dni
-                th Motivo de Consulta 
-                th Obra Social 
-                th Telefono
-        tbody    
-            each paciente in pacientes
-                tr(id=`paciente-${paciente.id}`)
-                    td= paciente.nombre_completo
-                    td= paciente.dni
-                    td= paciente.motivo_consulta 
-                    td= paciente.obra_social 
-                    td= paciente.datos_contacto
-                    td
-                        a(href=`/pacientes/editar/${paciente.id}` class="btn btn-info") EDITAR 
-                        
+            a(href="./Crear" class="btn btn-success mb-4")
+                i.bi.bi-person-plus-fill.me-1
+                | Crear Paciente
+
+            if mensaje
+                .alert.alert-success.alert-dismissible.fade.show(role="alert" id="alerta-exito")
+                    i.bi.bi-check-circle-fill.me-2
+                    strong= mensaje
+                    button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+            .card.shadow
+                .card-body
+                    table.table.table-hover.table-striped.table-bordered
+                        thead.table-dark
+                            tr
+                                th Nombre
+                                th DNI
+                                th Obra Social
+                                th Teléfono
+                                th Acciones
+                        tbody
+                            each paciente in pacientes
+                                tr(id=`paciente-${paciente.id}`)
+                                    td= paciente.nombre_completo
+                                    td= paciente.dni
+                                    td= paciente.obra_social
+                                    td= paciente.datos_contacto
+                                    td
+                                        a(href=`/pacientes/editar/${paciente.id}` class="btn btn-outline-info btn-sm")
+                                            i.bi.bi-pencil-fill.me-1
+                                            | Editar

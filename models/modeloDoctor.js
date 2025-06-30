@@ -81,10 +81,21 @@ Doctor.removeEspecialidadFromDoctor = (doctorId, especialidadId, callback) => {
 // Obtener doctores con especialidades y matrículas
 Doctor.getDoctoresConEspecialidades = (callback) => {
     const query = `
-        SELECT d.*, de.matricula, e.nombre AS especialidad
-        FROM doctores d
-        LEFT JOIN doctores_especialidad de ON d.id = de.id_doctor
-        LEFT JOIN especialidad e ON de.id_especialidad = e.id
+        SELECT 
+    d.id,
+    d.nombre_completo,
+    d.telefono,
+    d.dni,
+    d.mail,
+    d.domicilio,
+    GROUP_CONCAT(DISTINCT de.matricula) AS matricula,
+    GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS especialidad,
+    d.activo
+FROM doctores d
+LEFT JOIN doctores_especialidad de ON d.id = de.id_doctor
+LEFT JOIN especialidad e ON de.id_especialidad = e.id
+GROUP BY d.id;
+
     `;
     connection.query(query, (err, results) => {
         callback(err, results);

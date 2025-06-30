@@ -1,49 +1,100 @@
 extends ../layout.pug
+
 block contenido
+    .container-fluid.mt-4
+        .mx-auto(style="width: 90%;")
+            button.btn.btn-secondary.mb-3(onclick='history.back()')
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
-    h1.text-center.mt-4 Lista de Turnos de la Agenda
-    .container.mt-5
-        .row
-            .col-md-12
-                .d-flex.justify-content-between.mb-3
-                    h2 Lista de Turnos
-                    
-                    .form-group
-                        label(for="fech") Fecha
-                        input.form-control(type="date" id="fecha" name="fecha")
-                        button.btn.btn-success(type="button", onclick=`buscarTurnos(${agenda.id})`) Buscar
+            h1.text-center.mb-4.text-primary.fw-bold.display-5 Lista de Turnos
 
-                
-                table.table.table-hover.table-striped.table-bordered
-                    thead.thead-dark
-                        tr
-                            if usuario.rol != 'usuario'
-                                th Paciente
-                            th Doctor 
-                            th Fecha
-                            th Hora de Inicio
-                            th Hora de Fin
-                            th Estado
-                            if usuario.rol != 'usuario'
-                                th Motivo
-                            th Acciones
-                    each turno in turnos
-                        tr
-                            td= turno.paciente_nombre || 'Sin asignar'
-                            td= turno.doctor_nombre
-                            td= formatearFecha(turno.fechaTurno)
-                            td= turno.inicio
-                            td= turno.fin
-                            td
-                                if turno.estado_turno === 'Libre'
-                                    span.badge.text-bg-success Libre
-                                else if turno.estado_turno === 'Reservado'
-                                    span.badge.text-bg-warning Reservado
-                            td= turno.motivo || 'No especificado'
-                            td
-                                a.btn.btn-sm.btn-primary(href=`/agendas/asignar/${turno.turno_id}`) Reservar
-                h2 Sobreturnos
-                
+            .row
+                .col-md-12
+                    .card.shadow.mb-4
+                        .card-header.bg-primary.text-white
+                            h4.mb-0 Turnos Programados
+
+                        .card-body
+                            .d-flex.justify-content-between.align-items-center.mb-3
+                                .form-group.mb-0
+                                    label(for="fecha").form-label Fecha:
+                                    input.form-control(type="date", id="fecha", name="fecha")
+                                button.btn.btn-primary.ms-3(type="button", onclick=`buscarTurnos(${agenda.id})`)
+                                    i.bi.bi-search.me-1
+                                    | Buscar
+
+                                if usuario.rol != 'usuario'
+                                    a.btn.btn-success.ms-auto(href=`/agendas/${agenda.id}/sobreturnos/crear`)
+                                        i.bi.bi-plus-circle.me-1
+                                        | Crear Sobreturno
+
+                            table.table.table-hover.table-striped.table-bordered.mt-3
+                                thead.table-dark
+                                    tr
+                                        if usuario.rol != 'usuario'
+                                            th Paciente
+                                        th Doctor
+                                        th Fecha
+                                        th Hora de Inicio
+                                        th Hora de Fin
+                                        th Estado
+                                        if usuario.rol != 'usuario'
+                                            th Motivo
+                                        th Acciones
+                                tbody
+                                    each turno in turnos
+                                        tr
+                                            if usuario.rol != 'usuario'
+                                                td= turno.paciente_nombre || 'Sin asignar'
+                                            td= turno.doctor_nombre
+                                            td= formatearFecha(turno.fechaTurno)
+                                            td= turno.inicio
+                                            td= turno.fin
+                                            td
+                                                if turno.estado_turno === 'Libre'
+                                                    span.badge.bg-success Libre
+                                                else if turno.estado_turno === 'Reservado'
+                                                    span.badge.bg-warning.text-dark Reservado
+                                            if usuario.rol != 'usuario'
+                                                td= turno.motivo || 'No especificado'
+                                            td
+                                                if turno.estado_turno === 'Reservado'
+                                                    button.btn.btn-sm.btn-outline-secondary(disabled) Reservado
+                                                else
+                                                    a.btn.btn-sm.btn-outline-primary(href=`/agendas/asignar/${turno.turno_id}`)
+                                                        i.bi.bi-calendar-check.me-1
+                                                        | Reservar
+
+            if usuario.rol != 'usuario'
+                .card.shadow
+                    .card-header.bg-danger.text-white
+                        h4.mb-0 Lista de Sobreturnos
+
+                    .card-body
+                        table.table.table-hover.table-striped.table-bordered
+                            thead.table-dark
+                                tr
+                                    th Paciente
+                                    th Fecha
+                                    th Hora de Inicio
+                                    th Hora de Fin
+                                    th Estado
+                                    th Motivo
+                            tbody
+                                each sobreturno in sobreturnos
+                                    tr
+                                        td= sobreturno.paciente_nombre || 'Sin asignar'
+                                        td= formatearFecha(sobreturno.fechaTurno)
+                                        td= sobreturno.inicio
+                                        td= sobreturno.fin
+                                        td
+                                            if sobreturno.estado_turno === 'Libre'
+                                                span.badge.bg-success Libre
+                                            else if sobreturno.estado_turno === 'Reservado'
+                                                span.badge.bg-warning.text-dark Reservado
+                                        td= sobreturno.motivo || 'No especificado'
+
     script.
         function buscarTurnos(agendaId) {
             const fecha = document.getElementById('fecha').value;
@@ -58,6 +109,5 @@ block contenido
                 return;
             }
 
-            // Redireccionar a la ruta con el ID de la agenda y la fecha seleccionada
             window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
-        }                           
+        }

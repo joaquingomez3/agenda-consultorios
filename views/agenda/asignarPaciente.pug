@@ -1,8 +1,11 @@
 extends ../layout.pug
 block contenido
-   
-    h1.text-center.mt-4 Asignar Paciente
-    .container.mt-5
+    .mb-2
+        button.btn.btn-secondary.mb-2(onclick='history.back()')
+            i.fas.fa-arrow-left.me-2
+            | Volver
+    h1.text-center.mt-2 Asignar Paciente
+    .container.mt-2
         form(method="post", action="/agendas/asignar")
             input(type="hidden", name="turno_id", value=turnoId)
             input(type="hidden", name="returnUrl", value=returnUrl)

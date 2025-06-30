@@ -1,20 +1,41 @@
 extends ../layout.pug
+
 block contenido
-            h2.text-center.my-4 Especialidades del Doctor
-                ul.list-group
-                    each especialidad in especialidades
-                        li.list-group-item.d-flex.justify-content-between.align-items-center
-                            = especialidad.nombre
-                            a.btn.btn-danger.btn-sm(href=`/doctores/${doctorId}/especialidades/eliminar/${especialidad.id}`) Eliminar
+    .container.mt-5
+        .card.shadow
+            .card-body
+                h2.text-center.mb-4.text-primary Especialidades del Doctor
 
-            h3.mt-5 Asignar Nueva Especialidad
-            form(action=`/doctores/${doctorId}/especialidades/asignar` method="POST")
-                .mb-3
-                    label(for="especialidadId") Especialidad:
-                    select.form-select(name="especialidadId" id="especialidadId")
-                        each especialidad in todasLasEspecialidades
-                            option(value=especialidad.id)= especialidad.nombre
-                input(type="hidden" name="doctorId" value=doctorId)
-                button.btn.btn-primary(type="submit") Asignar Especialidad
+                if especialidades.length
+                    ul.list-group.mb-4
+                        each especialidad in especialidades
+                            li.list-group-item.d-flex.justify-content-between.align-items-center
+                                span.fw-semibold= especialidad.nombre
+                                a.btn.btn-sm.btn-outline-danger(href=`/doctores/${doctorId}/especialidades/eliminar/${especialidad.id}`)
+                                    i.bi.bi-trash-fill.me-1
+                                    | Eliminar
+                else
+                    .alert.alert-info No hay especialidades asignadas a este doctor.
 
-            a.btn.btn-secondary.mt-3(href="/doctores/") Volver al listado de doctores
+                hr
+
+                h4.text-secondary.mb-3.mt-4
+                    i.bi.bi-plus-circle-fill.me-2
+                    | Asignar Nueva Especialidad
+
+                form(action=`/doctores/${doctorId}/especialidades/asignar` method="POST")
+                    .mb-3
+                        label.form-label(for="especialidadId") Especialidad:
+                        select.form-select(name="especialidadId" id="especialidadId" required)
+                            option(value="" disabled selected) -- Selecciona una especialidad --
+                            each especialidad in todasLasEspecialidades
+                                option(value=especialidad.id)= especialidad.nombre
+
+                    input(type="hidden" name="doctorId" value=doctorId)
+                    button.btn.btn-success(type="submit")
+                        i.bi.bi-check-circle-fill.me-1
+                        | Asignar Especialidad
+
+                a.btn.btn-outline-secondary.mt-4(href="/doctores/")
+                    i.bi.bi-arrow-left-circle.me-1
+                    | Volver al listado de doctores

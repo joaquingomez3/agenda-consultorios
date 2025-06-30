@@ -1,76 +1,63 @@
 extends layout.pug
 
 block contenido
-    .container
-        // Barra superior con nombre de usuario y logout
-        .d-flex.justify-content-end.align-items-center
-            
-            .d-flex.justify-content-end.align-items-center.mb-3
-                img(src="/imagenes/doctores.jpg", alt="logo" class="rounded-circle mb-3" width="40")
-                span.me-3 #{usuario.username}
-                a.btn.btn-danger(href="/logout") Cerrar Sesión
+    .container.mt-4
+        // Barra superior con logout y usuario
+        .d-flex.justify-content-end.align-items-center.mb-3
+            img(src="/imagenes/doctores.jpg", alt="logo", class="rounded-circle me-2", width="40")
+            span.me-3.fw-semibold #{usuario.username}
+            button.btn.btn-danger.btn-sm(type="button", onclick="confirmarLogout()")
+                i.bi.bi-box-arrow-right.me-1
+                | Cerrar Sesión
 
+        h1.text-center.text-primary.mb-2 Bienvenido a la Agenda de Consultorios Médicos
+        p.text-center.text-muted.fs-5 Seleccioná una opción para comenzar
 
-        h1.text-center Bienvenido a la Agenda de Consultorios Médicos
-        p.text-center Seleccione una opción a continuación:
         if success
             .alert.alert-success.alert-dismissible.fade.show.mt-3.mb-0.p-2.text-center.small#mensaje-exito(role="alert")= success
 
-        .row.justify-content-center.mt-4
-            if usuario.rol === 'Secretaria'
+        .row.justify-content-center.mt-4.g-4
+            if usuario.rol === 'Secretaria' || usuario.rol === 'admin'
                 .col-md-4
                     .card.card-hover.shadow-sm.border-0
                         .card-body.text-center
-                            img(src="/imagenes/pacientes.jpg" alt="Icono de Pacientes" class="mb-3" width="80")
+                            img(src="/imagenes/pacientes.jpg", alt="Pacientes", class="mb-3", width="80")
                             h5.card-title Pacientes
-                            p.card-text Aquí puedes gestionar la información de los pacientes.
-                            a(href="/pacientes/" class="btn btn-primary btn-lg w-100") Ir a Pacientes
+                            p.card-text.text-muted Gestión de información de los pacientes.
+                            a.btn.btn-primary.w-100(href="/pacientes/") Ir a Pacientes
                 .col-md-4
                     .card.card-hover.shadow-sm.border-0
                         .card-body.text-center
-                            img(src="/imagenes/calendario.jpg" alt="Icono de Agenda" class="mb-3" width="80")
+                            img(src="/imagenes/calendario.jpg", alt="Agenda", class="mb-3", width="80")
                             h5.card-title Agenda
-                            p.card-text Aquí puedes ver y gestionar las citas médicas para pacientes.
-                            a(href="/agendas/" class="btn btn-primary btn-lg w-100") Ir a Agenda
+                            p.card-text.text-muted Gestión y visualización de turnos médicos.
+                            a.btn.btn-primary.w-100(href="/agendas/") Ir a Agenda
+
             if usuario.rol === 'admin'
                 .col-md-4
                     .card.card-hover.shadow-sm.border-0
                         .card-body.text-center
-                            img(src="/imagenes/pacientes.jpg" alt="Icono de Pacientes" class="mb-3" width="80")
-                            h5.card-title Pacientes
-                            p.card-text Aquí puedes gestionar la información de los pacientes.
-                            a(href="/pacientes/" class="btn btn-primary btn-lg w-100") Ir a Pacientes
-                .col-md-4
-                    .card.card-hover.shadow-sm.border-0
-                        .card-body.text-center
-                            img(src="/imagenes/calendario.jpg" alt="Icono de Agenda" class="mb-3" width="80")
-                            h5.card-title Agenda
-                            p.card-text Aquí puedes ver y gestionar las citas médicas para pacientes.
-                            a(href="/agendas/" class="btn btn-primary btn-lg w-100") Ir a Agenda
-                .col-md-4
-                    .card.card-hover.shadow-sm.border-0
-                        .card-body.text-center
-                            img(src="/imagenes/doctores.jpg" alt="Icono de Doctores" class="mb-3" width="80") 
+                            img(src="/imagenes/doctores.jpg", alt="Doctores", class="mb-3", width="80")
                             h5.card-title Doctores
-                            p.card-text Aquí puedes gestionar la información de los doctores.
-                            a(href="/doctores/" class="btn btn-primary btn-lg w-100") Ir a Doctores            
+                            p.card-text.text-muted Administración de profesionales médicos.
+                            a.btn.btn-primary.w-100(href="/doctores/") Ir a Doctores
 
             if usuario.rol === 'usuario'
-                
-                    .col-md-4
-                        .card.card-hover.shadow-sm.border-0
-                            .card-body.text-center
-                                img(src="/imagenes/calendario.jpg" alt="Icono de Agenda" class="mb-3" width="80")
-                                h5.card-title Agendar turno
-                                p.card-text Aquí puedes ver y gestionar las citas médicas.
-                                a(href="/agendas/" class="btn btn-primary btn-lg w-100") Ir a Agenda
-                    .col-md-4
-                        .card.card-hover.shadow-sm.border-0
-                            .card-body.text-center
-                                img(src="/imagenes/pacientes.jpg" alt="Icono de Pacientes" class="mb-3" width="80")
-                                h5.card-title Mi Perfil
-                                p.card-text Aquí puedes ver y gestionar datos de tu perfil.
-                                a(href=`usuarios/editar/${usuario.dni}` class="btn btn-primary btn-lg w-100") Ir a Perfil
+                .col-md-4
+                    .card.card-hover.shadow-sm.border-0
+                        .card-body.text-center
+                            img(src="/imagenes/calendario.jpg", alt="Turnos", class="mb-3", width="80")
+                            h5.card-title Agendar Turno
+                            p.card-text.text-muted Visualizá y reservá tus turnos médicos.
+                            a.btn.btn-primary.w-100(href="/agendas/") Ir a Agenda
+                .col-md-4
+                    .card.card-hover.shadow-sm.border-0
+                        .card-body.text-center
+                            img(src="/imagenes/pacientes.jpg", alt="Perfil", class="mb-3", width="80")
+                            h5.card-title Mi Perfil
+                            p.card-text.text-muted Accedé y editá tus datos personales.
+                            a.btn.btn-primary.w-100(href=`/usuarios/editar/${usuario.dni}`) Ir a Perfil
+
     script.
         setTimeout(() => {
             const mensaje = document.getElementById('mensaje-exito');
@@ -78,3 +65,20 @@ block contenido
                 mensaje.style.display = 'none';
             }
         }, 4000);
+
+        function confirmarLogout() {
+            Swal.fire({
+                title: '¿Cerrar sesión?',
+                text: "¿Estás seguro de que querés cerrar sesión?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, cerrar sesión',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/logout";
+                }
+            });
+        }

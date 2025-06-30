@@ -1,50 +1,64 @@
 extends ../layout.pug
 
 block contenido
+    .container-fluid.mt-4
+        .mx-auto(style="width: 90%;")
+            button.btn.btn-secondary.mb-3(onclick='history.back()')
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
-    
-    if usuario.rol != 'usuario'
-        a(href="./vistaCrear" class="btn btn-success me-2") Crear Agenda
-        a(href="./generarTurnosAgendas" class="btn btn-success") Generar turnos
+            if usuario.rol != 'usuario'
+                .d-flex.justify-content-start.mb-3
+                    a(href="./vistaCrear" class="btn btn-success me-2")
+                        i.bi.bi-plus-circle.me-1
+                        | Crear Agenda
+                    a(href="./generarTurnosAgendas" class="btn btn-primary")
+                        i.bi.bi-clock-history.me-1
+                        | Generar Turnos
 
-    .form-inline
+            if mensaje
+                .alert.alert-success.alert-dismissible.fade.show(role="alert" id="alerta-exito")
+                    i.bi.bi-check-circle-fill.me-2
+                    strong= mensaje
+                    button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
 
-    if mensaje 
-        .alert.alert-success#alerta-exito
-            h4= mensaje
+            .card.shadow
+                .card-header.bg-primary.text-white
+                    h4.mb-0 Lista de Agendas Disponibles
 
-    table(class="table table-striped")
-        thead 
-            tr 
-                th Dias 
-                if usuario.rol != 'usuario'
-                    th Hora de inicio 
-                    th Hora de fin 
-                    th Duracion de Turnos
-                    th Clasificación
-                th Nombre de Sucursal 
-                th Nombre de Doctor
-                th Especialidad
-                th Acciones
+                .card-body
+                    table.table.table-hover.table-striped.table-bordered.mt-3
+                        thead.table-dark
+                            tr
+                                th Días
+                                if usuario.rol != 'usuario'
+                                    th Hora de Inicio
+                                    th Hora de Fin
+                                    th Duración
+                                    th Clasificación
+                                th Sucursal
+                                th Doctor
+                                th Especialidad
+                                th Acciones
 
-        tbody    
-            each agenda in agendas
-                tr(id=`agenda-${agenda.id}`)
-                    td= agenda.dias
-
-                    if usuario.rol != 'usuario'
-                        td= agenda.horaInicio
-                        td= agenda.horaFin
-                        td= agenda.duracion
-                        td= agenda.clasificacion
-
-                    td= agenda.nombre_sucursal
-                    td= agenda.nombre_completo
-                    td= agenda.nombre_especialidad
-                    td
-                       
-                        if usuario.rol != 'usuario'
-                            a(href=`./editar/${agenda.id}` class="btn btn-info me-2") Editar
-
-                        
-                        a(href=`./${agenda.id}/turnos` class="btn btn-warning") Ver Turnos
+                        tbody
+                            each agenda in agendas
+                                tr(id=`agenda-${agenda.id}`)
+                                    td= agenda.dias
+                                    if usuario.rol != 'usuario'
+                                        td= agenda.horaInicio
+                                        td= agenda.horaFin
+                                        td= agenda.duracion
+                                        td= agenda.clasificacion
+                                    td= agenda.nombre_sucursal
+                                    td= agenda.nombre_completo
+                                    td= agenda.nombre_especialidad
+                                    td
+                                        .d-flex.flex-wrap.gap-2
+                                            if usuario.rol != 'usuario'
+                                                a(href=`./editar/${agenda.id}` class="btn btn-outline-info btn-sm")
+                                                    i.bi.bi-pencil-square.me-1
+                                                    | Editar
+                                            a(href=`./${agenda.id}/turnos` class="btn btn-outline-warning btn-sm")
+                                                i.bi.bi-calendar-check.me-1
+                                                | Ver Turnos

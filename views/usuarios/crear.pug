@@ -1,43 +1,52 @@
-extends ../layout.pug 
+extends ../layout.pug
+
 block contenido
-  h1.text-center Crear Usuario
-  .container
-    if errores
-      .alert.alert-danger
-        ul
-          each err in errores
-            li= err
+    .container.mt-5
+        button.btn.btn-secondary.mb-4(onclick='history.back()')
+            i.bi.bi-arrow-left.me-2
+            | Volver
 
-    .row.justify-content-center
-      .col-md-6
-        form(method="POST" action="/usuarios/crear")
-          div.form-group
-            label(for="nombre") Nombre Completo
-            input#nombre.form-control(type="text" name="nombre" required)
-          div.form-group
-            label(for="dni") DNI
-            input#dni.form-control(type="text" name="dni" required) 
-          div.form-group
-            label(for="obraSocial") Obra Social
-            input#obraSocial.form-control(type="text" name="obraSocial" required)
-          div.form-group
-            label(for="tel") Telefono
-            input#tel.form-control(type="tel" name="tel" required)    
-          div.form-group
-            label(for="nombre") Nombre Usuario
-            input#nombre.form-control(
-              type="text",
-              name="nombre_usuario",
-              required,
-              value=nombre_usuario || ''
-            )
+        h2.text-center.text-primary.mb-4 Crear Usuario
 
-          div.form-group
-            label(for="contrasenia") Contraseña
-            input#contrasenia.form-control(type="password" name="contrasenia" required)
-          div.form-group
-            label(for="contrasenia") Repite la Contraseña
-            input#contrasenia.form-control(type="password" name="nuevaContrasenia" required)
-       
+        if errores
+            .alert.alert-danger
+                ul.mb-0
+                    each err in errores
+                        li= err
 
-          button.btn.btn-primary(type="submit") Crear
+        .row.justify-content-center
+            .col-md-8.col-lg-6
+                .card.shadow
+                    .card-body
+                        form(method="POST" action="/usuarios/crear")
+                            .mb-3
+                                label.form-label(for="nombre") Nombre Completo
+                                input.form-control(type="text", name="nombre", id="nombre", required)
+
+                            .mb-3
+                                label.form-label(for="dni") DNI
+                                input.form-control(type="text", name="dni", id="dni", required)
+
+                            .mb-3
+                                label.form-label(for="obraSocial") Obra Social
+                                input.form-control(type="text", name="obraSocial", id="obraSocial", required)
+
+                            .mb-3
+                                label.form-label(for="tel") Teléfono
+                                input.form-control(type="tel", name="tel", id="tel", required)
+
+                            .mb-3
+                                label.form-label(for="nombre_usuario") Nombre de Usuario
+                                input.form-control(type="text", name="nombre_usuario", id="nombre_usuario", value=nombre_usuario || '', required)
+
+                            .mb-3
+                                label.form-label(for="contrasenia") Contraseña
+                                input.form-control(type="password", name="contrasenia", id="contrasenia", required)
+
+                            .mb-3
+                                label.form-label(for="nuevaContrasenia") Repetir Contraseña
+                                input.form-control(type="password", name="nuevaContrasenia", id="nuevaContrasenia", required)
+
+                            button.btn.btn-success.w-100(type="submit")
+                                i.bi.bi-person-plus-fill.me-1
+                                | Crear Usuario

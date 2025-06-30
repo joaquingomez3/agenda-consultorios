@@ -366,8 +366,111 @@ crearTurnosDiarios(id, callback) {
             // Retorna el primer resultado de la agenda_id
             callback(null, results[0]?.id_agenda);
     });
+}, 
+// PARTE DE SOBRETURNOS
+validarYCrearSobreturnoConAsignacion: (idAgenda, fecha, horaInicio, pacienteId, motivo, callback) => {
+    const sqlAgenda = 'SELECT * FROM agenda WHERE id = ?';
+    connection.query(sqlAgenda, [idAgenda], (err, agendaRes) => {
+        if (err) return callback(err);
+        if (agendaRes.length === 0) return callback(null, 'Agenda no encontrada');
+
+        const agenda = agendaRes[0];
+        const horaInicioMoment = moment(horaInicio, 'HH:mm');
+        const inicio = moment(agenda.horainicio, 'HH:mm:ss');
+        const fin = moment(agenda.horaFin, 'HH:mm:ss');
+
+        if (horaInicioMoment.isBefore(inicio) || horaInicioMoment.clone().add(agenda.duracion, 'minutes').isAfter(fin)) {
+            return callback(null, 'El horario está fuera del rango permitido');
+        }
+
+        const sqlCount = `SELECT COUNT(*) AS total FROM sobreturnos WHERE id_agenda = ? AND fechaTurno = ?`;
+        connection.query(sqlCount, [idAgenda, fecha], (err, countRes) => {
+            if (err) return callback(err);
+            if (countRes[0].total >= agenda.sobreturnos) {
+                return callback(null, 'Ya se alcanzó el máximo de sobreturnos permitidos');
+            }
+
+            const finTurno = horaInicioMoment.clone().add(agenda.duracion, 'minutes').format('HH:mm:ss');
+            const sqlInsert = `
+                INSERT INTO sobreturnos (id_agenda, fechaTurno, inicio, fin, estado_turno, id_paciente, motivo)
+                VALUES (?, ?, ?, ?, 'Reservado', ?, ?)
+            `;
+            connection.query(sqlInsert, [idAgenda, fecha, horaInicio, finTurno, pacienteId, motivo], (err) => {
+                if (err) return callback(err);
+                callback(null, null);
+            });
+        });
+    });
+},
+
+
+ verSobreturnosPorAgenda: (idAgenda, callback) => {
+    const sql = `
+        SELECT s.*, p.nombre_completo AS paciente_nombre, d.nombre_completo AS doctor_nombre
+        FROM sobreturnos s
+        LEFT JOIN paciente p ON s.id_paciente = p.id
+        LEFT JOIN agenda a ON s.id_agenda = a.id
+        LEFT JOIN doctores d ON a.id_doctor = d.id
+        WHERE s.id_agenda = ? 
+    `;
+    connection.query(sql, [idAgenda], callback);
+},
+
+
+  asignarPacienteASobreturno: (sobreturnoId, pacienteId, motivo, callback) => {
+    const sql = `UPDATE sobreturnos SET id_paciente = ?, motivo = ?, estado_turno = 'Reservado' WHERE id = ?`;
+    connection.query(sql, [pacienteId, motivo, sobreturnoId], callback);
+  },
+
+
+//----------------------------------------------------------------
+
+// ------ codigo de prueba ----------------////
+insertarTurnosSiNoExisten(id, fecha, callback) {
+  // Consultar si ya hay turnos en esa fecha para la agenda
+  connection.query(
+    'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',
+    [id, fecha],
+    (err, results) => {
+      if (err) return callback(err);
+
+      if (results[0].cantidad > 0) {
+        // Ya existen turnos para esa fecha
+        return callback(null);
+      }
+
+      // Si no existen, generarlos (tomar horas y duración de agenda)
+      connection.query(
+        'SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?',
+        [id],
+        (err, resAgenda) => {
+          if (err) return callback(err);
+          if (resAgenda.length === 0) return callback(new Error('Agenda no encontrada'));
+
+          const { horaInicio, horaFin, duracion } = resAgenda[0];
+          const inicio = moment(`${fecha} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+          const fin = moment(`${fecha} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
+          const turnos = [];
+
+          for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+            turnos.push([id, fecha, m.format('HH:mm:ss'), m.clone().add(duracion, 'minutes').format('HH:mm:ss'), 2]);
+          }
+
+          connection.query(
+            'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+            [turnos],
+            (insertErr) => {
+              if (insertErr) return callback(insertErr);
+              callback(null);
+            }
+          );
+        }
+      );
+    }
+  );
 }
 
+//----------------------------------------------------------//
     
 };
 module.exports = Agenda;

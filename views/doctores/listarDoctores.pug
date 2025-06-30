@@ -1,39 +1,61 @@
 extends ../layout.pug
+
 block contenido
+    .container-fluid.mt-4
+        .mx-auto(style="width: 90%;")
+            button.btn.btn-secondary.mb-3(onclick='history.back()')
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
-    a(href="./Crear" class="btn btn-success") Crear Doctor
-    if mensaje 
-        .alert.alert-success#alerta-exito
-            h4= mensaje
+            h1.text-center.mb-4.text-primary.fw-bold.display-5 Lista de Doctores
 
-    table(class="table table-striped")
-        thead 
-            tr 
-                th Nombre
-                th Telefono 
-                th Dni 
-                th Mail 
-                th Domicilio 
-                th Matriculas
-                th Especialidades
-                th Acciones
-        tbody    
-            each doctor in doctores
-                tr(id=`doctor-${doctor.id}` class=!(doctor.activo ? '' : 'table-danger text-decoration-line-through'))
-                    td= doctor.nombre_completo
-                    td= doctor.telefono
-                    td= doctor.dni
-                    td= doctor.mail
-                    td= doctor.domicilio
-                    td= doctor.matricula
-                    td= doctor.especialidad
+            a(href="./Crear" class="btn btn-success mb-4")
+                i.bi.bi-person-plus-fill.me-1
+                | Crear Doctor
 
-                    td
-                        a(href=`./editar/${doctor.id}` class="btn btn-info me-2") EDITAR 
-                        a(href=`./${doctor.id}/especialidades` class="btn btn-secondary me-2") ESPS.
-                        if doctor.activo
-                            button(type="button" class="btn btn-danger me-2 " onclick=`cambiarEstadoDoctor(${doctor.id}, false)`) DESHABILITAR 
-                            button(type="button" class="btn btn-warning d-none" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`) HABILITAR
-                        else
-                            button(type="button" class="btn btn-warning me-2" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`) HABILITAR
-                            button(type="button" class="btn btn-danger d-none" onclick=`cambiarEstadoDoctor(${doctor.id}, false)`) DESHABILITAR
+            if mensaje
+                .alert.alert-success.alert-dismissible.fade.show(role="alert" id="alerta-exito")
+                    i.bi.bi-check-circle-fill.me-2
+                    strong= mensaje
+                    button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
+
+            .card.shadow
+                .card-body
+                    table.table.table-hover.table-striped.table-bordered
+                        thead.table-dark
+                            tr
+                                th Nombre
+                                th Teléfono
+                                th DNI
+                                th Mail
+                                th Domicilio
+                                th Matrículas
+                                th Especialidades
+                                th Acciones
+                        tbody
+                            each doctor in doctores
+                                tr(id=`doctor-${doctor.id}` class=!(doctor.activo ? '' : 'table-danger text-decoration-line-through'))
+                                    td= doctor.nombre_completo
+                                    td= doctor.telefono
+                                    td= doctor.dni
+                                    td= doctor.mail
+                                    td= doctor.domicilio
+                                    td= doctor.matricula
+                                    td= doctor.especialidad
+                                    td
+                                        .d-flex.flex-wrap.gap-2
+                                            a(href=`./editar/${doctor.id}` class="btn btn-outline-info btn-sm")
+                                                i.bi.bi-pencil-fill.me-1
+                                                | Editar
+                                            a(href=`./${doctor.id}/especialidades` class="btn btn-outline-secondary btn-sm")
+                                                i.bi.bi-layers.me-1
+                                                | Especialidad
+
+                                            if doctor.activo
+                                                button(type="button" class="btn btn-outline-danger btn-sm" onclick=`cambiarEstadoDoctor(${doctor.id}, false)`)
+                                                    i.bi.bi-x-circle-fill.me-1
+                                                    | Deshabilitar
+                                            else
+                                                button(type="button" class="btn btn-outline-warning btn-sm" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`)
+                                                    i.bi.bi-check-circle-fill.me-1
+                                                    | Habilitar

@@ -1,30 +1,38 @@
 extends ../layout.pug
 
 block contenido
-    .container
-        h1.text-center Editar mi perfil
+    .container.mt-5
+        button.btn.btn-secondary.mb-4(onclick='history.back()')
+            i.bi.bi-arrow-left.me-2
+            | Volver
 
-        
+        h2.text-center.text-primary.mb-4 Editar mi Perfil
 
-        .row.justify-content-center.mt-4
-            .col-md-6
-                .card.shadow-sm.border-0
+        .row.justify-content-center
+            .col-md-8.col-lg-6
+                .card.shadow
                     .card-body
                         form(action="/usuarios/editar/" method="POST")
-                            
                             .mb-3
-                                label.form-label(for="nombre") Nombre Usuario
-                                input.form-control(type="text" id="nombreUsuario" name="nombreUsuario" value=usuario.nombre_usuario required)
+                                label.form-label(for="nombreUsuario") Nombre de Usuario
+                                input.form-control(type="text", id="nombreUsuario", name="nombreUsuario", value=usuario.nombre_usuario, required)
+
                             .mb-3
                                 label.form-label(for="dni") DNI
-                                input.form-control(type="text" id="dni" name="dni" value=usuario.dni required)
+                                input.form-control(type="text", id="dni", name="dni", value=usuario.dni, required)
+
                             .mb-3
                                 label.form-label(for="nombre") Nombre Completo
-                                input.form-control(type="text" id="nombre" name="nombre" value=paciente.nombre_completo required)
+                                input.form-control(type="text", id="nombre", name="nombre", value=paciente.nombre_completo, required)
+
                             .mb-3
                                 label.form-label(for="obraSocial") Obra Social
-                                input.form-control(type="text" id="obraSocial" name="obraSocial" value=paciente.obra_social)
+                                input.form-control(type="text", id="obraSocial", name="obraSocial", value=paciente.obra_social)
+
                             .mb-3
-                                label.form-label(for="telefono") Teléfono
-                                input.form-control(type="tel" id="tel" name="tel" value=paciente.datos_contacto required)
-                            button.btn.btn-primary(type="submit") Guardar Cambios
+                                label.form-label(for="tel") Teléfono
+                                input.form-control(type="tel", id="tel", name="tel", value=paciente.datos_contacto, required)
+
+                            button.btn.btn-success.w-100(type="submit")
+                                i.bi.bi-save-fill.me-1
+                                | Guardar Cambios
