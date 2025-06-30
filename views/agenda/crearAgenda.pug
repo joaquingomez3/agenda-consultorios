@@ -1,46 +1,55 @@
 extends ../layout.pug
+
 block contenido
-    .mb-2
-        button.btn.btn-secondary(onclick='history.back()')
+    .container.mt-4
+        button.btn.btn-outline-secondary.mb-3(onclick='history.back()')
             i.fas.fa-arrow-left.me-2
             | Volver
-    .container
+
         .row.justify-content-center
-            .col-md-6
-                form(action="/agendas/" method="post" class="border p-4 rounded bg-light")
-                    .mb-3
-                        label(for="sucursal" class="form-label") Sucursal:
-                        select(name="id_sucursal" class="form-control")
-                            each sucursal in sucursales
-                                option(value=sucursal.id)= sucursal.nombre
-                    
-                    .mb-3
-                        label(for="matricula" class="form-label") Doctor:
-                        select(name="matricula" class="form-control")
-                            each doctor in doctores
-                                option(value=doctor.matricula)= doctor.nombre_completo
+            .col-md-8
+                .card.shadow-lg
+                    .card-body
+                        h3.text-center.text-primary.mb-4 Crear Nueva Agenda
+                        form(action="/agendas/" method="post")
+                            .mb-3
+                                label(for="sucursal" class="form-label fw-semibold") Sucursal:
+                                select(name="id_sucursal" class="form-select" required)
+                                    option(value='') -- Seleccione una sucursal --
+                                    each sucursal in sucursales
+                                        option(value=sucursal.id)= sucursal.nombre
+                            
+                            .mb-3
+                                label(for="matricula" class="form-label fw-semibold") Doctor:
+                                select(name="matricula" class="form-select" required)
+                                    option(value='') -- Seleccione un doctor --
+                                    each doctor in doctores
+                                        option(value=doctor.matricula)= doctor.nombre_completo
 
-                    .mb-3
-                        label(for="clasificacion" class="form-label") Clasificación:
-                        input(type="text" name="clasificacion" class="form-control" placeholder="Ingresa la clasificación")
+                            .mb-3
+                                label(for="clasificacion" class="form-label fw-semibold") Clasificación:
+                                input(type="text" name="clasificacion" class="form-control" placeholder="Ej: Turnos generales" required)
 
-                    .mb-3
-                        label(for="sobreturnos" class="form-label") Máximo de Sobreturnos:
-                        input(type="text" name="sobreturnos" class="form-control" placeholder="Ingresa la cantidad de sobreturnos")
-                    
-                    .mb-3
-                        label(for="dias" class="form-label") Días:
-                        input(type="text" name="dias" class="form-control" placeholder="Ej: lunes, martes, miércoles")
+                            .mb-3
+                                label(for="sobreturnos" class="form-label fw-semibold") Máximo de Sobreturnos:
+                                input(type="number" name="sobreturnos" class="form-control" placeholder="Ej: 5" required)
+                            
+                            .mb-3
+                                label(for="dias" class="form-label fw-semibold") Días de Atención:
+                                input(type="text" name="dias" class="form-control" placeholder="Ej: lunes, miércoles, viernes" required)
 
-                    .mb-3
-                        label(for="horainicio" class="form-label") Hora de Inicio:
-                        input(type="time" name="horainicio" class="form-control")
+                            .row
+                                .col-md-6.mb-3
+                                    label(for="horainicio" class="form-label fw-semibold") Hora de Inicio:
+                                    input(type="time" name="horainicio" class="form-control" required)
 
-                    .mb-3
-                        label(for="horaFin" class="form-label") Hora de Fin:
-                        input(type="time" name="horaFin" class="form-control")
+                                .col-md-6.mb-3
+                                    label(for="horaFin" class="form-label fw-semibold") Hora de Fin:
+                                    input(type="time" name="horaFin" class="form-control" required)
 
-                    .mb-3
-                        label(for="duracion" class="form-label") Duración de Turno:
-                        input(type="text" name="duracion" class="form-control" placeholder="Ej: 30min")
-                    button(type="submit" class="btn btn-primary w-100") Agregar
+                            .mb-3
+                                label(for="duracion" class="form-label fw-semibold") Duración por Turno (minutos):
+                                input(type="number" name="duracion" class="form-control" placeholder="Ej: 30" required)
+
+                            .d-grid.mt-4
+                                button(type="submit" class="btn btn-primary btn-lg") Crear Agenda

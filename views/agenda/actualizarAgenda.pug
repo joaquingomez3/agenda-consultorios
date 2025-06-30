@@ -1,26 +1,30 @@
 extends ../layout.pug
-block contenido
-   .mb-2
-        button.btn.btn-secondary(onclick='history.back()')
-                    i.fas.fa-arrow-left.me-2
-                    | Volver 
-   .container.mt-4
-    .row.justify-content-center
-        .col-md-6
-            form(action="/agendas/actualizar" method="post" class="border p-4 rounded bg-light")
-                // Campo oculto para pasar el id
-                input(type="hidden", name="id", value=agenda.id)
 
-                .mb-3
-                    label(for="sucursal" class="form-label") Sucursal:
-                    input(type="text" name="sucursal" class="form-control" value=agenda.id_sucursal placeholder="Ingresa el nombre completo")
-                
-                .mb-3
-                    label(for="clasificacion" class="form-label") Clasificacion:
-                    input(type="text" name="clasificacion" class="form-control" value=agenda.clasificacion placeholder="Ingresa la matrícula")
-                
-                .mb-3
-                    label(for="maxTurnos" class="form-label") Maximo de sobreturnos:
-                    input(type="text" name="maxTurnos" class="form-control" value=agenda.max_sobreturnos placeholder="Ingresa el número de sucursal")
-                
-                button(type="submit" class="btn btn-primary w-100") Editar
+block contenido
+    .container.mt-4
+        button.btn.btn-outline-secondary.mb-3(onclick='history.back()')
+            i.fas.fa-arrow-left.me-2
+            | Volver
+
+        .row.justify-content-center
+            .col-md-8
+                .card.shadow-lg
+                    .card-body
+                        h3.text-center.text-primary.mb-4 Editar Agenda
+                        form(action="/agendas/actualizar" method="post")
+                            input(type="hidden" name="id" value=agenda.id)
+
+                            .mb-3
+                                label(for="sucursal" class="form-label fw-semibold") Sucursal:
+                                input(type="text" name="sucursal" class="form-control" value=agenda.id_sucursal readonly)
+
+                            .mb-3
+                                label(for="clasificacion" class="form-label fw-semibold") Clasificación:
+                                input(type="text" name="clasificacion" class="form-control" value=agenda.clasificacion placeholder="Ej: Turnos prioritarios" required)
+
+                            .mb-3
+                                label(for="maxTurnos" class="form-label fw-semibold") Máximo de Sobreturnos:
+                                input(type="number" name="maxTurnos" class="form-control" value=agenda.max_sobreturnos placeholder="Ej: 3" required)
+
+                            .d-grid.mt-4
+                                button(type="submit" class="btn btn-primary btn-lg") Guardar Cambios

@@ -1,22 +1,33 @@
 extends ../layout.pug
+
 block contenido
-    .mb-2
-        button.btn.btn-secondary.mb-2(onclick='history.back()')
+    .container.mt-4
+        button.btn.btn-outline-secondary.mb-3(onclick='history.back()')
             i.fas.fa-arrow-left.me-2
             | Volver
-    h1.text-center.mt-2 Asignar Paciente
-    .container.mt-2
-        form(method="post", action="/agendas/asignar")
-            input(type="hidden", name="turno_id", value=turnoId)
-            input(type="hidden", name="returnUrl", value=returnUrl)
-            input(type="hidden", name="agendaId", value=agendaId)
-            .mb-3
-                label(for="paciente_id") Seleccionar Paciente
-                select.form-control(name="paciente_id", required)
-                    option(value="") Selecciona un paciente
-                    each paciente in pacientes
-                        option(value=paciente.id) #{paciente.nombre_completo}
-            .mb-3
-                label(for="motivo") Motivo
-                input.form-control(type="text", name="motivo", required)
-            button.btn.btn-primary(type="submit") Asignar Paciente
+
+        .row.justify-content-center
+            .col-md-6
+                .card.shadow-lg
+                    .card-body
+                        h3.text-center.text-primary.mb-4 Asignar Paciente al Turno
+
+                        form(method="post", action="/agendas/asignar")
+                            input(type="hidden", name="turno_id", value=turnoId)
+                            input(type="hidden", name="returnUrl", value=returnUrl)
+                            input(type="hidden", name="agendaId", value=agendaId)
+
+                            
+                            .mb-3
+                                    label(for="paciente_id" class="form-label fw-semibold") Seleccionar Paciente
+                                    select.form-select(name="paciente_id", required)
+                                        option(value="") -- Selecciona un paciente --
+                                        each paciente in pacientes
+                                            option(value=paciente.id)= paciente.nombre_completo
+
+                            .mb-3
+                                label(for="motivo" class="form-label fw-semibold") Motivo de la consulta
+                                input.form-control(type="text", name="motivo", placeholder="Ej: Control general" required)
+
+                            .d-grid.mt-4
+                                button.btn.btn-primary.btn-lg(type="submit") Asignar Paciente
