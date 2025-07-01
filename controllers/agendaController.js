@@ -1,5 +1,6 @@
 const AgendaModel = require('../models/modeloAgenda');
 const PacienteModel = require('../models/modeloPaciente');
+const FeriadosModel = require('../models/modeloFeriados');
 const DoctorModel = require('../models/modeloDoctor');
 const moment = require('moment');
 
@@ -128,21 +129,16 @@ exports.actualizarAgenda = (req, res) => {
     });
 };
 
-// exports.verTurnosAgenda = (req, res) => {
-//     const id = req.params.id;
 
-//     AgendaModel.verTurnosAgenda(id, (err, results) => {
-//         if (err) {
-//             return res.status(500).json({ error: 'Error al traer turnos' });
-//         }
-        
-//         res.render('agenda/verTurnosAgenda', { turnos: results, formatearFecha, agenda: {id} });
-//     });
-// };
 exports.verTurnosAgenda = (req, res) => {
   const id = req.params.id;
   const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Fecha actual si no se pasa fecha
-
+  
+    AgendaModel.eliminarSobreturnosViejos(id, (err) => {
+        if (err) {
+            console.error('Error al eliminar sobreturnos viejos:', err);
+        }
+    });
   AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
     if (err) return res.status(500).json({ error: 'Error al generar turnos' });
 
@@ -163,6 +159,7 @@ exports.verTurnosAgenda = (req, res) => {
       });
     });
   });
+
 };
 
 
@@ -200,15 +197,21 @@ exports.turnosFechaSeleccionada = (req, res) => {
 
 exports.mostrarAsignacionPaciente = (req, res) => {
     const turnoId = req.params.turnoId;
-    
+    const dni = req.user.dni; // Obtener el DNI del usuario autenticado
     const returnUrl = req.get('referer');
     PacienteModel.getAll((err, pacientes) => {
         if (err) {
             return res.status(500).json({ error: 'Error al obtener la lista de pacientes' });
         }
-        
-    res.render('agenda/asignarPaciente', { turnoId, pacientes, returnUrl, usuario: req.user });
+    
+    PacienteModel.obtenerPorDni(dni, (err, usuario) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al obtener el paciente' });
+        }
+           
+    res.render('agenda/asignarPaciente', { turnoId, pacientes, returnUrl, usuario: req.user, paciente:usuario });
     });
+});
 }
 
 exports.asignarPaciente = (req, res) => {
@@ -255,10 +258,30 @@ exports.crearSobreturno = (req, res) => {
 
     AgendaModel.validarYCrearSobreturnoConAsignacion(idAgenda, fecha, inicio, paciente_id, motivo, (err, mensajeError) => {
         if (err) return res.status(500).send("Error al crear sobreturno");
-        if (mensajeError) return res.send(`<h3 style="color:red">${mensajeError}</h3><a href="/agendas/${idAgenda}/sobreturnos/crear">Volver</a>`);
-        res.redirect(`/agendas/${idAgenda}/turnos/${fecha}`);
+
+        if (mensajeError) {
+            // Volvemos a cargar la agenda y pacientes para volver a renderizar el formulario
+            AgendaModel.obtenerAgendaPorId(idAgenda, (errAgenda, resultados) => {
+                if (errAgenda || resultados.length === 0) return res.status(500).send("Error al cargar agenda");
+
+                const agenda = resultados[0];
+                PacienteModel.getAll((errPacientes, pacientes) => {
+                    if (errPacientes) return res.status(500).send("Error al obtener pacientes");
+
+                    res.render('agenda/crearSobreturno', {
+                        agenda,
+                        pacientes,
+                        error: mensajeError, // <-- pasamos el mensaje
+                        formData: { fecha, inicio, paciente_id, motivo } // <-- opcional para repoblar el formulario
+                    });
+                });
+            });
+        } else {
+            res.redirect(`/agendas/${idAgenda}/turnos/${fecha}`);
+        }
     });
 };
+
 
 // ------ codigo de prueba ----------------////
 exports.verTurnosAgendaPorFecha = (req, res) => {
@@ -306,5 +329,23 @@ function formatearFecha(fechaStr) {
     return `${dia}-${mes}-${anio}`;
 }
 
+function esDiaValidoParaAgenda(fechaISO, diasLaboralesTexto) {
+    console.log(`Verificando si la fecha ${fechaISO} es válida para los días laborales: ${diasLaboralesTexto}`);
+    const diasTextoAIndice = {
+        'Domingo': 0,
+        'Lunes': 1,
+        'Martes': 2,
+        'Miércoles': 3,
+        'Jueves': 4,
+        'Viernes': 5,
+        'Sábado': 6
+    };
+
+    const fecha = new Date(fechaISO);
+    const diaSemana = fecha.getDay();
+
+    const diasPermitidos = diasLaboralesTexto.split('-,').map(dia => diasTextoAIndice[dia.trim()]);
+    return diasPermitidos.includes(diaSemana);
+}
 
 

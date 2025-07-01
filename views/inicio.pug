@@ -2,14 +2,7 @@ extends layout.pug
 
 block contenido
     .container.mt-4
-        // Barra superior con logout y usuario
-        .d-flex.justify-content-end.align-items-center.mb-3
-            img(src="/imagenes/doctores.jpg", alt="logo", class="rounded-circle me-2", width="40")
-            span.me-3.fw-semibold #{usuario.username}
-            button.btn.btn-danger.btn-sm(type="button", onclick="confirmarLogout()")
-                i.bi.bi-box-arrow-right.me-1
-                | Cerrar Sesión
-
+        
         h1.text-center.text-primary.mb-2 Bienvenido a la Agenda de Consultorios Médicos
         p.text-center.text-muted.fs-5 Seleccioná una opción para comenzar
 

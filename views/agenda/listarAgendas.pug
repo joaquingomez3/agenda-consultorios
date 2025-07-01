@@ -24,7 +24,7 @@ block contenido
 
             .card.shadow
                 .card-header.bg-primary.text-white
-                    h4.mb-0 Lista de Agendas Disponibles
+                    h4.mb-0.text-center Lista de Agendas Disponibles
 
                 .card-body
                     table.table.table-hover.table-striped.table-bordered.mt-3
@@ -56,7 +56,7 @@ block contenido
                                     td
                                         .d-flex.flex-wrap.gap-2
                                             if usuario.rol != 'usuario'
-                                                a(href=`./editar/${agenda.id}` class="btn btn-outline-info btn-sm")
+                                                a(href=`./editar/${agenda.id}` class="btn btn-info btn-sm")
                                                     i.bi.bi-pencil-square.me-1
                                                     | Editar
                                             a(href=`./${agenda.id}/turnos` class="btn btn-warning btn-sm")

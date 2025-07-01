@@ -4,7 +4,7 @@ const Doctor = require('../models/modeloDoctor');
 exports.listarDoctores = (req, res) => {
     Doctor.getDoctoresConEspecialidades((err, results) => {
         if (err) throw new Error('Error al listar doctores');
-        res.render('doctores/listarDoctores', { doctores: results });
+        res.render('doctores/listarDoctores', { doctores: results, usuario: req.user });
     });
 };
 

@@ -368,13 +368,22 @@ crearTurnosDiarios(id, callback) {
     });
 }, 
 // PARTE DE SOBRETURNOS
-validarYCrearSobreturnoConAsignacion: (idAgenda, fecha, horaInicio, pacienteId, motivo, callback) => {
+validarYCrearSobreturnoConAsignacion (idAgenda, fecha, horaInicio, pacienteId, motivo, callback) {
     const sqlAgenda = 'SELECT * FROM agenda WHERE id = ?';
     connection.query(sqlAgenda, [idAgenda], (err, agendaRes) => {
         if (err) return callback(err);
         if (agendaRes.length === 0) return callback(null, 'Agenda no encontrada');
 
         const agenda = agendaRes[0];
+
+        // ✅ Validación de fecha no pasada
+        const fechaTurno = moment(fecha, 'YYYY-MM-DD');
+        const hoy = moment().startOf('day');
+        if (fechaTurno.isBefore(hoy)) {
+            return callback(null, 'No se puede asignar un sobreturno en una fecha pasada');
+        }
+
+        // Validación de rango horario
         const horaInicioMoment = moment(horaInicio, 'HH:mm');
         const inicio = moment(agenda.horainicio, 'HH:mm:ss');
         const fin = moment(agenda.horaFin, 'HH:mm:ss');
@@ -383,6 +392,7 @@ validarYCrearSobreturnoConAsignacion: (idAgenda, fecha, horaInicio, pacienteId, 
             return callback(null, 'El horario está fuera del rango permitido');
         }
 
+        // Validación de cantidad máxima de sobreturnos
         const sqlCount = `SELECT COUNT(*) AS total FROM sobreturnos WHERE id_agenda = ? AND fechaTurno = ?`;
         connection.query(sqlCount, [idAgenda, fecha], (err, countRes) => {
             if (err) return callback(err);
@@ -390,6 +400,7 @@ validarYCrearSobreturnoConAsignacion: (idAgenda, fecha, horaInicio, pacienteId, 
                 return callback(null, 'Ya se alcanzó el máximo de sobreturnos permitidos');
             }
 
+            // Inserción del sobreturno
             const finTurno = horaInicioMoment.clone().add(agenda.duracion, 'minutes').format('HH:mm:ss');
             const sqlInsert = `
                 INSERT INTO sobreturnos (id_agenda, fechaTurno, inicio, fin, estado_turno, id_paciente, motivo)
@@ -403,6 +414,13 @@ validarYCrearSobreturnoConAsignacion: (idAgenda, fecha, horaInicio, pacienteId, 
     });
 },
 
+eliminarSobreturnosViejos (id, callback) {
+    const sql = 'DELETE FROM sobreturnos WHERE id_agenda = ? AND fechaTurno < CURDATE()';
+    connection.query(sql, [id], (err, result) => {
+        if (err) return callback(err);
+        
+    });
+},
 
  verSobreturnosPorAgenda: (idAgenda, callback) => {
     const sql = `

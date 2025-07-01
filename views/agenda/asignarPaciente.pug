@@ -17,8 +17,14 @@ block contenido
                             input(type="hidden", name="returnUrl", value=returnUrl)
                             input(type="hidden", name="agendaId", value=agendaId)
 
-                            
-                            .mb-3
+                            // Mostrar según rol
+                            if usuario && usuario.rol === 'usuario'
+                                input(type="hidden", name="paciente_id", value=paciente.id)
+                                .mb-3
+                                    label.form-label Paciente
+                                    input.form-control(type="text", value=paciente.nombre_completo, readonly)
+                            else
+                                .mb-3
                                     label(for="paciente_id" class="form-label fw-semibold") Seleccionar Paciente
                                     select.form-select(name="paciente_id", required)
                                         option(value="") -- Selecciona un paciente --
@@ -31,3 +37,5 @@ block contenido
 
                             .d-grid.mt-4
                                 button.btn.btn-primary.btn-lg(type="submit") Asignar Paciente
+
+

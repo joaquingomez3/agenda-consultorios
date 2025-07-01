@@ -111,3 +111,26 @@ block contenido
 
             window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
         }
+            
+        const inputFecha = document.getElementById('fecha');
+        const feriados = !{JSON.stringify(feriados)};
+        const diasNoLaborales = !{JSON.stringify(diasNoLaborales)};
+
+        inputFecha.addEventListener('input', function () {
+            const fechaSeleccionada = new Date(this.value);
+            const diaSemana = fechaSeleccionada.getDay();
+            const fechaStr = this.value;
+
+            if (diasNoLaborales.includes(diaSemana)) {
+                alert("La fecha seleccionada no corresponde a un día laboral de esta agenda.");
+                this.value = '';
+                return;
+            }
+
+            if (feriados.includes(fechaStr)) {
+                alert("La fecha seleccionada es un feriado.");
+                this.value = '';
+                return;
+            }
+        });
+

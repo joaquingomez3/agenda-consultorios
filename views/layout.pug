@@ -23,5 +23,33 @@ html
             i.bi.bi-hospital-fill.me-2
             | Consultorios Médicos
 
+    
+    if typeof usuario !== 'undefined'
+      .bg-white.shadow-sm.border-bottom
+        .container.py-2.d-flex.justify-content-end.align-items-center
+          img(src="/imagenes/doctores.jpg", alt="logo", class="rounded-circle me-2", width="40")
+          span.me-3.fw-semibold #{usuario.username}
+          button.btn.btn-danger.btn-sm(type="button", onclick="confirmarLogout()")
+            i.bi.bi-box-arrow-right.me-1
+            | Cerrar Sesión
+
     main
       block contenido
+
+    script.
+      function confirmarLogout() {
+        Swal.fire({
+            title: '¿Cerrar sesión?',
+            text: "¿Estás seguro de que querés cerrar sesión?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/logout";
+            }
+        });
+      }

@@ -1,6 +1,11 @@
 extends ../layout.pug
 
 block contenido
+    .container-fluid.mt-4
+        .mx-auto(style="width: 90%;")
+            button.btn.btn-secondary(onclick='history.back()')
+                i.bi.bi-arrow-left.me-2
+                | Volver
     .container.mt-5
         .card.shadow
             .card-body
@@ -36,6 +41,4 @@ block contenido
                         i.bi.bi-check-circle-fill.me-1
                         | Asignar Especialidad
 
-                a.btn.btn-outline-secondary.mt-4(href="/doctores/")
-                    i.bi.bi-arrow-left-circle.me-1
-                    | Volver al listado de doctores
+                

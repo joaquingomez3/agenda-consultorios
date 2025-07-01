@@ -4,7 +4,7 @@ const Paciente = require('../models/modeloPaciente');
 exports.listarPacientes = (req, res) => {
     Paciente.getAll((err, results) => {
         if (err) throw new Error('Error al listar pacientes');
-        res.render('pacientes/listarPacientes', { pacientes: results });
+        res.render('pacientes/listarPacientes', { pacientes: results, usuario: req.user });
     });
 };
 
