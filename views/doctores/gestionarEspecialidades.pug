@@ -3,9 +3,10 @@ extends ../layout.pug
 block contenido
     .container-fluid.mt-4
         .mx-auto(style="width: 90%;")
-            button.btn.btn-secondary(onclick='history.back()')
+            a.btn.btn-secondary.mb-3(href="/doctores/")
                 i.bi.bi-arrow-left.me-2
                 | Volver
+
     .container.mt-5
         .card.shadow
             .card-body

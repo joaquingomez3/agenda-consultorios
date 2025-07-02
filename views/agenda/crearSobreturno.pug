@@ -2,6 +2,9 @@ extends ../layout.pug
 
 block contenido
     .container.mt-5
+        button.btn.btn-outline-secondary.mb-3(onclick='history.back()')
+            i.fas.fa-arrow-left.me-2
+            | Volver
         .card.shadow
             .card-header.bg-primary.text-white
                 h3.mb-0.text-center Crear Sobreturno y Asignar Paciente

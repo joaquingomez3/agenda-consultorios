@@ -3,9 +3,10 @@ extends ../layout.pug
 block contenido
     .container-fluid.mt-4
         .mx-auto(style="width: 90%;")
-            button.btn.btn-secondary.mb-3(onclick='history.back()')
+            a.btn.btn-secondary.mb-3(href="/agendas/")
                 i.bi.bi-arrow-left.me-2
                 | Volver
+
 
             h1.text-center.mb-4.text-primary.fw-bold.display-5 Lista de Turnos
 
@@ -105,32 +106,18 @@ block contenido
 
             const hoy = new Date().toISOString().split('T')[0];
             if (fecha < hoy) {
-                alert("No podés buscar turnos en una fecha pasada.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Fecha inválida',
+                    text: 'No podés buscar turnos en una fecha pasada.',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#3085d6'
+                });
                 return;
             }
 
             window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
         }
             
-        const inputFecha = document.getElementById('fecha');
-        const feriados = !{JSON.stringify(feriados)};
-        const diasNoLaborales = !{JSON.stringify(diasNoLaborales)};
-
-        inputFecha.addEventListener('input', function () {
-            const fechaSeleccionada = new Date(this.value);
-            const diaSemana = fechaSeleccionada.getDay();
-            const fechaStr = this.value;
-
-            if (diasNoLaborales.includes(diaSemana)) {
-                alert("La fecha seleccionada no corresponde a un día laboral de esta agenda.");
-                this.value = '';
-                return;
-            }
-
-            if (feriados.includes(fechaStr)) {
-                alert("La fecha seleccionada es un feriado.");
-                this.value = '';
-                return;
-            }
-        });
+        
 

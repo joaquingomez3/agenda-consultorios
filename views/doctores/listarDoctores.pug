@@ -3,7 +3,7 @@ extends ../layout.pug
 block contenido
     .container-fluid.mt-4
         .mx-auto(style="width: 90%;")
-            button.btn.btn-secondary.mb-3(onclick='history.back()')
+            a.btn.btn-secondary.mb-3(href="/inicio")
                 i.bi.bi-arrow-left.me-2
                 | Volver
 
@@ -59,3 +59,54 @@ block contenido
                                                 button(type="button" class="btn btn-outline-warning btn-sm" onclick=`cambiarEstadoDoctor(${doctor.id}, true)`)
                                                     i.bi.bi-check-circle-fill.me-1
                                                     | Habilitar
+     
+    script.
+        function cambiarEstadoDoctor(id, nuevoEstado) {
+            const accion = nuevoEstado ? 'habilitar' : 'deshabilitar';
+            const accionTexto = nuevoEstado ? 'habilitado' : 'deshabilitado';
+
+            Swal.fire({
+                title: `¿Estás seguro de ${accion} este doctor?`,
+                text: `El doctor será ${accionTexto}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: nuevoEstado ? '#198754' : '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: `Sí, ${accion}`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/doctores/${id}/estado`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ activo: nuevoEstado })
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Error HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.exito) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: `Doctor ${accionTexto} correctamente`,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                // recargá la tabla o actualizá dinámicamente si querés
+                                location.reload(); // o actualizar la fila dinámicamente como antes
+                            });
+                        } else {
+                            Swal.fire('Error', 'No se pudo actualizar el estado del doctor.', 'error');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        Swal.fire('Error', 'Error en la solicitud.', 'error');
+                    });
+                }
+            });
+        }
+

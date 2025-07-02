@@ -2,9 +2,9 @@ extends ../layout.pug
 
 block contenido
     .container.mt-5
-        button.btn.btn-secondary.mb-4(onclick='history.back()')
-            i.bi.bi-arrow-left.me-2
-            | Volver
+        a.btn.btn-secondary.mb-3(href="/inicio")
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
         h2.text-center.text-primary.mb-4 Editar mi Perfil
 

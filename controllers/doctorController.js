@@ -61,7 +61,8 @@ exports.cambiarEstadoDoctor = (req, res) => {
 
     Doctor.changeStatus(id, activo, (err, results) => {
         if (err) return res.status(500).json({ error: 'Error al actualizar el estado del doctor' });
-        res.status(200).json({ message: 'Estado del doctor actualizado correctamente' });
+        res.status(200).json({ exito: true });
+
     });
 };
 

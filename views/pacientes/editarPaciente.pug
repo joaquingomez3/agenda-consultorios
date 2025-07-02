@@ -2,9 +2,9 @@ extends ../layout.pug
 
 block contenido
     .container.mt-5
-        button.btn.btn-secondary.mb-4(onclick='history.back()')
-            i.bi.bi-arrow-left.me-2
-            | Volver
+        a.btn.btn-secondary.mb-3(href="/pacientes/")
+                i.bi.bi-arrow-left.me-2
+                | Volver
 
         .row.justify-content-center
             .col-md-8.col-lg-6

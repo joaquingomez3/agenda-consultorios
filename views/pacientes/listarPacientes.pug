@@ -3,9 +3,10 @@ extends ../layout.pug
 block contenido
     .container-fluid.mt-4
         .mx-auto(style="width: 90%;")
-            button.btn.btn-secondary.mb-3(onclick='history.back()')
+            a.btn.btn-secondary.mb-3(href="/inicio")
                 i.bi.bi-arrow-left.me-2
                 | Volver
+
 
             h1.text-center.mb-4.text-primary.fw-bold.display-5 Lista de Pacientes
 
@@ -21,6 +22,7 @@ block contenido
 
             .card.shadow
                 .card-body
+                
                     table.table.table-hover.table-striped.table-bordered
                         thead.table-dark
                             tr
