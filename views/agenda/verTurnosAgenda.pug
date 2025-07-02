@@ -97,6 +97,7 @@ block contenido
                                         td= sobreturno.motivo || 'No especificado'
 
     script.
+        const fechasFeriadas = !{JSON.stringify(fechasNoLaborales)};
         function buscarTurnos(agendaId) {
             const fecha = document.getElementById('fecha').value;
             if (!fecha) {
@@ -115,9 +116,19 @@ block contenido
                 });
                 return;
             }
+            if (fechasFeriadas.includes(fecha)) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Feriado',
+                    text: 'No se pueden generar turnos en días no laborables.',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#3085d6'
+                });
+                return;
+            }
 
             window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
         }
-            
+
         
 

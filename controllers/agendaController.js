@@ -131,35 +131,46 @@ exports.actualizarAgenda = (req, res) => {
 
 
 exports.verTurnosAgenda = (req, res) => {
-  const id = req.params.id;
-  const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Fecha actual si no se pasa fecha
-  
+    const id = req.params.id;
+    const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Fecha actual si no se pasa fecha
+
+    FeriadosModel.getAll((err, feriados) => {
+        if (err) {
+            console.error('Error al obtener feriados:', err);
+            return res.status(500).json({ error: 'Error al obtener feriados' });
+        }
+        const fechasNoLaborales = feriados.map(f => moment(f.fecha).format('YYYY-MM-DD'));
+
+        
+    
     AgendaModel.eliminarSobreturnosViejos(id, (err) => {
         if (err) {
             console.error('Error al eliminar sobreturnos viejos:', err);
         }
     });
-  AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
-    if (err) return res.status(500).json({ error: 'Error al generar turnos' });
+    AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
+        if (err) return res.status(500).json({ error: 'Error al generar turnos' });
 
     AgendaModel.turnosPorFecha(id, fecha, (err, turnos) => {
-      if (err) return res.status(500).json({ error: 'Error al obtener turnos' });
+        if (err) return res.status(500).json({ error: 'Error al obtener turnos' });
 
-      AgendaModel.verSobreturnosPorAgenda(id, (err, sobreturnos) => {
+    AgendaModel.verSobreturnosPorAgenda(id, (err, sobreturnos) => {
         if (err) return res.status(500).json({ error: 'Error al obtener sobreturnos' });
 
         res.render('agenda/verTurnosAgenda', {
-          turnos,
-          sobreturnos,
-          agenda: { id },
-          usuario: req.user,
-          formatearFecha,
-          fechaSeleccionada: fecha
+            turnos,
+            sobreturnos,
+            agenda: { id },
+            usuario: req.user,
+            formatearFecha,
+            fechaSeleccionada: fecha,
+            fechasNoLaborales
         });
-      });
+        });
     });
-  });
-
+    });
+});
+    
 };
 
 
