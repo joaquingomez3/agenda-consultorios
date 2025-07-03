@@ -119,13 +119,14 @@ exports.vistaActualizar = (req, res) => {
 };
 
 exports.actualizarAgenda = (req, res) => {
-    const { id_sucursal, clasificacion, max_sobreturnos, doctor_especialidad_id } = req.body;
-    const id = req.params.id;
-    AgendaModel.actualizarAgenda(id, { id_sucursal, clasificacion, max_sobreturnos, doctor_especialidad_id }, (err) => {
+    const {id, id_sucursal, clasificacion, max_sobreturnos } = req.body;
+    
+    AgendaModel.actualizarAgenda(id, { id_sucursal, clasificacion, max_sobreturnos}, (err) => {
         if (err) {
             return res.status(500).json({ error: 'Error al actualizar agenda' });
         }
-        res.redirect('/agendas'); // Redirige a la lista de agendas después de actualizar
+        res.redirect('/agendas/?actualizada=1');
+
     });
 };
 
@@ -296,34 +297,47 @@ exports.crearSobreturno = (req, res) => {
 
 // ------ codigo de prueba ----------------////
 exports.verTurnosAgendaPorFecha = (req, res) => {
-  const id = req.params.id;
-  const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Si no se pasa fecha, tomar hoy
+    const id = req.params.id;
+    const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Si no se pasa fecha, tomar hoy
 
   // Primero insertar turnos si no existen
-  AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
-    if (err) return res.status(500).json({ error: 'Error al generar turnos' });
+    AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
+        if (err) return res.status(500).json({ error: 'Error al generar turnos' });
 
     // Traer turnos luego de la inserción (o si ya existen)
     AgendaModel.turnosPorFecha(id, fecha, (err, turnos) => {
-      if (err) return res.status(500).json({ error: 'Error al obtener turnos' });
+        if (err) return res.status(500).json({ error: 'Error al obtener turnos' });
 
       // Traer sobreturnos si corresponde
-      AgendaModel.verSobreturnosPorAgenda(id, (err, sobreturnos) => {
+    AgendaModel.verSobreturnosPorAgenda(id, (err, sobreturnos) => {
         if (err) return res.status(500).json({ error: 'Error al obtener sobreturnos' });
 
         res.render('agenda/verTurnosAgenda', {
-          turnos,
-          sobreturnos,
-          agenda: { id },
-          usuario: req.user,
-          formatearFecha,
-          fechaSeleccionada: fecha
+            turnos,
+            sobreturnos,
+            agenda: { id },
+            usuario: req.user,
+            formatearFecha,
+            fechaSeleccionada: fecha
+            });
         });
-      });
+        });
     });
-  });
 };
 //----------------------------------------------------------//
+exports.cancelarTurno = (req, res) => {
+    const turnoId = req.params.id;
+    console.log("ID del turno a cancelar:", turnoId);
+
+    AgendaModel.cancelarTurno(turnoId, (err) => {
+        if (err) {
+            console.error("Error al cancelar turno:", err);
+            return res.status(500).json({ success: false });
+        }
+
+        return res.json({ success: true });
+    });
+};
 
 //----------------------------------------------------------//
 

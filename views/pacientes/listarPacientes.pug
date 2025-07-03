@@ -39,9 +39,13 @@ block contenido
                                     td= paciente.obra_social
                                     td= paciente.datos_contacto
                                     td
-                                        a(href=`/pacientes/editar/${paciente.id}` class="btn btn-outline-info btn-sm")
-                                            i.bi.bi-pencil-fill.me-1
-                                        | Editar
+                                       a.btn.btn-sm.btn-outline-primary.d-inline-flex.align-items-center.gap-1(
+                                            href=`/pacientes/editar/${paciente.id}`, 
+                                            title="Editar Paciente"
+                                            )
+                                            i.bi.bi-pencil-fill
+                                            span Editar
+
     script.
         document.addEventListener('DOMContentLoaded', function () {
             const tabla = document.getElementById('tablaPacientes');

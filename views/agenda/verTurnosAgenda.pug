@@ -61,15 +61,19 @@ block contenido
                                                 td= turno.motivo || 'No especificado'
                                             td
                                                 if turno.estado_turno === 'Reservado'
-                                                    button.btn.btn-sm.btn-outline-secondary(disabled) Reservado
+                                                    button.btn.btn-danger.btn-sm(type="button", onclick=`cancelarTurno(${turno.turno_id}, ${agenda.id})`)
+                                                        i.bi.bi-x-circle.me-1
+                                                        | Cancelar
                                                 else
-                                                    a.btn.btn-sm.btn-outline-primary(href=`/agendas/asignar/${turno.turno_id}`)
-                                                        i.bi.bi-calendar-check.me-1
+                                                    a.btn.btn-outline-primary.btn-sm(href=`/agendas/asignar/${turno.turno_id}`) 
+                                                        i.bi.bi-pencil.me-1
                                                         | Reservar
+
+
 
             if usuario.rol != 'usuario'
                 .card.shadow
-                    .card-header.bg-danger.text-white
+                    .card-header.bg-success.text-white.text-center
                         h4.mb-0 Lista de Sobreturnos
 
                     .card-body
@@ -141,5 +145,34 @@ block contenido
             });
             }
         });
-        
+    script.
+            function cancelarTurno(turnoId, agendaId) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Deseás cancelar este turno?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, cancelar',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/agendas/turnos/${turnoId}/cancelar`, {
+                            method: 'POST'
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Cancelado', 'El turno fue cancelado con éxito.', 'success')
+                                    .then(() => {
+                                        window.location.href = `/agendas/${agendaId}/turnos/${document.getElementById('fecha').value}`;
+                                    });
+                            } else {
+                                Swal.fire('Error', 'No se pudo cancelar el turno.', 'error');
+                            }
+                        });
+                    }
+                });
+            }   
 

@@ -62,3 +62,15 @@ block contenido
                                             a(href=`./${agenda.id}/turnos` class="btn btn-warning btn-sm")
                                                 i.bi.bi-calendar-check.me-1
                                                 | Ver Turnos
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('actualizada') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Agenda actualizada',
+                    text: 'La agenda fue actualizada correctamente.',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+        });

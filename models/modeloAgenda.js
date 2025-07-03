@@ -63,10 +63,10 @@ const Agenda = {
     },
     
 
-    actualizarAgenda(id, { id_sucursal, clasificacion, max_sobreturnos, doctor_especialidad_id }, callback) {
+    actualizarAgenda(id, { id_sucursal, clasificacion, max_sobreturnos }, callback) {
         connection.query(
-            'UPDATE agenda SET id_sucursal = ?, clasificacion = ?, max_sobreturnos = ?, doctor_especialidad_id = ? WHERE id = ?',
-            [id_sucursal, clasificacion, max_sobreturnos, doctor_especialidad_id, id],
+            'UPDATE agenda SET id_sucursal = ?, clasificacion = ?, sobreturnos = ? WHERE id = ?',
+            [id_sucursal, clasificacion, max_sobreturnos, id],
             callback
         );
     },
@@ -486,9 +486,23 @@ insertarTurnosSiNoExisten(id, fecha, callback) {
       );
     }
   );
-}
+},
 
 //----------------------------------------------------------//
+cancelarTurno  (turnoId, callback)  {
+    const sql = `
+        UPDATE turno 
+        SET id_paciente = NULL, motivo = NULL, estado_turno = '2' 
+        WHERE id = ?
+    `;
+
+    connection.query(sql, [turnoId], (err, result) => {
+        if (err) {
+            return callback(err);
+        }
+        callback(null, result);
+    });
+}
     
 };
 module.exports = Agenda;
