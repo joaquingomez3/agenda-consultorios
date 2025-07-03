@@ -21,7 +21,7 @@ block contenido
 
             .card.shadow
                 .card-body
-                    table.table.table-hover.table-striped.table-bordered
+                    table#tablaDoctores.table.table-hover.table-striped.table-bordered
                         thead.table-dark
                             tr
                                 th Nombre
@@ -109,4 +109,15 @@ block contenido
                 }
             });
         }
-
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabla = document.getElementById('tablaDoctores');
+            if (tabla) {
+            new DataTable(tabla, {
+                language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                pageLength: 10
+            });
+            }
+        });

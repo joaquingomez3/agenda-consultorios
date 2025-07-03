@@ -30,7 +30,7 @@ block contenido
                                         i.bi.bi-plus-circle.me-1
                                         | Crear Sobreturno
 
-                            table.table.table-hover.table-striped.table-bordered.mt-3
+                            table#tablaTurnos.table.table-hover.table-striped.table-bordered.mt-3
                                 thead.table-dark
                                     tr
                                         if usuario.rol != 'usuario'
@@ -129,6 +129,17 @@ block contenido
 
             window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
         }
-
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabla = document.getElementById('tablaTurnos');
+            if (tabla) {
+            new DataTable(tabla, {
+                language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                pageLength: 10
+            });
+            }
+        });
         
 

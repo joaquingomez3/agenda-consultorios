@@ -23,7 +23,7 @@ block contenido
             .card.shadow
                 .card-body
                 
-                    table.table.table-hover.table-striped.table-bordered
+                    table#tablaPacientes.table.table-hover.table-striped.table-bordered
                         thead.table-dark
                             tr
                                 th Nombre
@@ -41,4 +41,16 @@ block contenido
                                     td
                                         a(href=`/pacientes/editar/${paciente.id}` class="btn btn-outline-info btn-sm")
                                             i.bi.bi-pencil-fill.me-1
-                                            | Editar
+                                        | Editar
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabla = document.getElementById('tablaPacientes');
+            if (tabla) {
+            new DataTable(tabla, {
+                language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                pageLength: 10
+            });
+            }
+        });
