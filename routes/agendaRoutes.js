@@ -18,5 +18,5 @@ router.post('/asignar', agendaController.asignarPaciente);
 router.get('/:id/sobreturnos/crear', chequeo, agendaController.vistaCrearSobreturno);
 router.post('/:id/sobreturnos/crear', chequeo, agendaController.crearSobreturno);
 router.post('/turnos/:id/cancelar', agendaController.cancelarTurno);
-
+router.get('/:id/calendario', chequeo, agendaController.vistaCalendario);
 module.exports = router;

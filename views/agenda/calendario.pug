@@ -1,0 +1,53 @@
+extends ../layout.pug
+
+block contenido
+  .container-fluid.mt-4
+    .mx-auto(style="max-width: 90%;")
+      h1.text-center.mb-4.text-primary.fw-bold Calendario de Turnos
+       input(type="hidden" name="id" id="agendaId" value=agenda.id)
+      #calendar(style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1);")
+
+  script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js")
+  script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js")
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+      
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        themeSystem: 'bootstrap5',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+          today: 'Hoy',
+          month: 'Mes',
+          week: 'Semana',
+          day: 'Día',
+          list: 'Lista'
+        },
+        dateClick: function (info) {
+          const fecha = info.dateStr;
+          const agendaId = document.getElementById('agendaId').value;
+          console.log(`Fecha seleccionada: ${agendaId} - ${fecha}`);
+          window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
+        },
+        height: 'auto',
+        selectable: true,
+        dayMaxEvents: true,
+        events: '/api/turnos/eventos' // <- Ruta que debe devolver eventos en formato JSON si querés mostrar turnos
+      });
+
+      calendar.render();
+    })
+  style.
+    #calendar {
+      transition: all 0.3s ease-in-out;
+    }
+    .fc-toolbar-title {
+      font-size: 1.8rem;
+      color: #0d6efd;
+    }

@@ -340,7 +340,15 @@ exports.cancelarTurno = (req, res) => {
 };
 
 //----------------------------------------------------------//
+exports.vistaCalendario = (req, res) => {
+    const id = req.params.id;
+    AgendaModel.obtenerAgendaPorId(id, (err, agenda) => {
+        if (err || agenda.length === 0) return res.status(500).send("Error al cargar agenda");
 
+        res.render('agenda/calendario', {agenda: agenda[0], usuario: req.user });
+    
+    });
+};
 function formatearFecha(fechaStr) {
     
     const fecha = new Date(fechaStr);
