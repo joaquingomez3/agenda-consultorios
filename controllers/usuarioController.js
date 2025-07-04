@@ -114,7 +114,7 @@ exports.editarUsuario = (req, res) => {
             console.error('Error al editar usuario:', err);
             return res.render('usuarios/editar', { errores: ['Error al editar usuario'] });
         }
-        res.redirect('/inicio?success=Perfil actualizado correctamente');
+        res.redirect('/inicio?editado=1');
     });
 
 }

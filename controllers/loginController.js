@@ -18,14 +18,14 @@ exports.procesarLogin = (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.render('login', { error: 'Usuario o contraseña incorrectos' });
+            return res.render('login', { error: 'Datos Incorrectos' });
         }
 
         const usuario = results[0];
         const coincide = await bcrypt.compare(password, usuario.contrasenia);
 
         if (!coincide) {
-            return res.render('login', { error: 'Contraseña incorrecta' });
+            return res.render('login', { error: 'Datos Incorrectos' });
         }
         
         // Generar el token JWT

@@ -29,12 +29,34 @@ block contenido
                                 input.form-control(type="text", name="dni", id="dni", placeholder="Ej: 30123456")
 
                             .mb-3
-                                label.form-label(for="motivoConsulta") Motivo de Consulta:
-                                input.form-control(type="text", name="motivoConsulta", id="motivoConsulta", placeholder="Opcional")
+                                label.form-label(for="fechaNacimiento") Fecha de Nacimiento:
+                                input.form-control(type="date", name="fechaNacimiento", id="fechaNacimiento", placeholder="Ej: 1990-01-01")
 
                             .mb-3
-                                label.form-label(for="obraSocial") Obra Social:
-                                input.form-control(type="text", name="obraSocial", id="obraSocial", placeholder="Ej: OSDE, IOMA, etc.")
+                                    label(for="sexo" class="form-label fw-semibold") Seleccionar Sexo
+                                    select.form-select(name="sexo", required)
+                                        option(value="") -- Selecciona un Sexo --
+                                        option(value="masculino") Masculino
+                                        option(value="femenino") Femenino
+                                            
+
+                            .mb-3
+                                    label(for="obraSocial" class="form-label fw-semibold") Seleccionar Obra Social
+                                    select.form-select(name="obraSocial", required)
+                                        option(value="") -- Selecciona una Obra Social --
+                                        option(value="PAMI") PAMI
+                                        option(value="IOMA") IOMA
+                                        option(value="OSDE") OSDE
+                                        option(value="Swiss Medical") Swiss Medical
+                                        option(value="Galeno") Galeno
+                                        option(value="OSECAC") OSECAC
+                                        option(value="DoSEP") DoSEP
+                                        option(value="Osfatun") Osfatun
+                                        option(value="Sancor Salud") Sancor Salud
+                                        option(value="Medicus") Medicus
+                                        option(value="No") No tiene
+                                            
+                                            
 
                             .mb-3
                                 label.form-label(for="contacto") Teléfono:

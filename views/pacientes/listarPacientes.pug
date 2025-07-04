@@ -28,6 +28,8 @@ block contenido
                             tr
                                 th Nombre
                                 th DNI
+                                th Fecha de Nacimiento
+                                th Sexo
                                 th Obra Social
                                 th Teléfono
                                 th Acciones
@@ -36,6 +38,8 @@ block contenido
                                 tr(id=`paciente-${paciente.id}`)
                                     td= paciente.nombre_completo
                                     td= paciente.dni
+                                    td= formatearFecha(paciente.fecha_nacimiento) 
+                                    td= paciente.sexo
                                     td= paciente.obra_social
                                     td= paciente.datos_contacto
                                     td
@@ -58,3 +62,27 @@ block contenido
             });
             }
         });
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('actualizado') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Paciente actualizado',
+                    text: 'El Paciente fue actualizado correctamente.',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+        });
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('creado') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Paciente Creado',
+                    text: 'El paciente fue creado correctamente.',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+        });    

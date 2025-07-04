@@ -10,7 +10,7 @@ exports.listarDoctores = (req, res) => {
 
 
 exports.vistaDoctor = (req, res) => {
-    res.render('doctores/crearDoctores');
+    res.render('doctores/crearDoctores', { usuario: req.user });
 };
 
 exports.crearDoctor = (req, res) => {
@@ -38,7 +38,7 @@ exports.crearDoctor = (req, res) => {
         
         Doctor.getAll((err, results) => {
             if (err) throw new Error('Error al listar doctores');
-            res.render('doctores/listarDoctores', { doctores: results, mensaje: `Se agregó el doctor ${nombre} exitosamente` });
+            res.redirect('/doctores/?creado=1');
         });
     });
 };
@@ -51,7 +51,7 @@ exports.editarDoctor = (req, res) => {
         if (!doctor) {
             return res.send('Doctor no encontrado');
         }
-        res.render('doctores/editarDoctores', { doctor });
+        res.render('doctores/editarDoctores', { doctor , usuario: req.user});
     });
 };
 
@@ -97,7 +97,7 @@ exports.actualizarDoctor = (req, res) => {
         
         Doctor.getAll((err, results) => {
             if (err) throw new Error('Error al listar doctores');
-            res.render('doctores/listarDoctores', { doctores: results, mensaje: `El doctor ${nombre} fue actualizado exitosamente` });
+            res.redirect('/doctores/?actualizado=1');
         });
     });
 };
@@ -114,7 +114,7 @@ exports.listarEspecialidadesDeDoctor = (req, res) => {
             if (err) throw new Error('Error al obtener todas las especialidades');
 
             // Renderiza la vista pasando las especialidades y todas las especialidades
-            res.render('doctores/gestionarEspecialidades', { especialidades, todasLasEspecialidades, doctorId });
+            res.render('doctores/gestionarEspecialidades', { especialidades, todasLasEspecialidades, doctorId, usuario: req.user });
         });
     });
 };

@@ -20,10 +20,10 @@ Paciente.crearParaUsuario = (nombre, dni, obraSocial, contacto, callback) => {
     );
 };
 
-Paciente.create = (nombre, dni, motivoConsulta, obraSocial, contacto, callback) => {
+Paciente.create = (nombre, dni, fechaNacimiento, sexo,  obraSocial, contacto, callback) => {
     connection.query(
-        'INSERT INTO paciente (nombre_completo, dni, motivo_consulta, obra_social, datos_contacto) VALUES (?, ?, ?, ?, ?)', 
-        [nombre, dni, motivoConsulta, obraSocial, contacto], 
+        'INSERT INTO paciente (nombre_completo, dni, fecha_nacimiento, sexo, obra_social, datos_contacto) VALUES (?, ?, ?, ?, ?, ?)', 
+        [nombre, dni, fechaNacimiento, sexo, obraSocial, contacto], 
         (err, results) => {
             callback(err, results);
         }
@@ -43,10 +43,10 @@ Paciente.getById = (id, callback) => {
 };
 
 // Actualizar paciente
-Paciente.update = (id, nombre, dni, motivoConsulta, obraSocial, contacto, callback) => {
+Paciente.update = (id, nombre, dni, fechaNacimiento, sexo, obraSocial, contacto, callback) => {
     connection.query(
-        'UPDATE paciente SET nombre_completo = ?, dni = ?, motivo_consulta = ?, obra_social = ?, datos_contacto = ? WHERE id = ?', 
-        [nombre, dni, motivoConsulta, obraSocial, contacto, id], 
+        'UPDATE paciente SET nombre_completo = ?, dni = ?, fecha_nacimiento = ?, sexo = ?, obra_social = ?, datos_contacto = ? WHERE id = ?', 
+        [nombre, dni, fechaNacimiento, sexo, obraSocial, contacto, id], 
         (err, results) => {
             callback(err, results);
         }

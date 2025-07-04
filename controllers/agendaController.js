@@ -50,7 +50,7 @@ exports.generarTurnosDiarios = (req, res) => {
     });
 };
 exports.vistaCrear = (req, res) => {
-    res.render('agenda/crearAgenda');
+    res.render('agenda/crearAgenda', { usuario: req.user });
 };
 
 
@@ -64,7 +64,7 @@ exports.formularioCrearAgenda = (req, res) => {
         if (err) {
             return res.status(500).send('Error al cargar sucursales');
         }
-        res.render('agenda/crearAgenda', { doctores, sucursales });
+        res.render('agenda/crearAgenda', { doctores, sucursales, usuario: req.user });
     });
 });
 };
@@ -102,7 +102,7 @@ exports.crearAgenda = (req, res) => {
             console.error('Error al crear agenda:', err);
             return res.status(500).json({ error: 'Error al crear agenda' });
         }
-        res.redirect('/agendas/');
+        res.redirect('/agendas/?creada=1');
         
     });
 };
@@ -114,7 +114,7 @@ exports.vistaActualizar = (req, res) => {
         if (err || results.length === 0) {
             return res.status(500).json({ error: 'Error al traer agenda' });
         }
-        res.render('agenda/actualizarAgenda', { agenda: results[0] });
+        res.render('agenda/actualizarAgenda', { agenda: results[0], usuario: req.user });
     });
 };
 
@@ -259,7 +259,7 @@ exports.vistaCrearSobreturno = (req, res) => {
         PacienteModel.getAll((err, pacientes) => {
             if (err) return res.status(500).send("Error al obtener pacientes");
 
-            res.render('agenda/crearSobreturno', { agenda, pacientes });
+            res.render('agenda/crearSobreturno', { agenda, pacientes , usuario: req.user});  // <-- pasamos error y formData vacíos);
         });
     });
 };

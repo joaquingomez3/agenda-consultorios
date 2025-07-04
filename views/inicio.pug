@@ -75,3 +75,15 @@ block contenido
                 }
             });
         }
+    script.
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('editado') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Perfil Actualizado',
+                    text: 'El Perfil fue actualizado correctamente.',
+                    confirmButtonColor: '#3085d6'
+                });
+            }
+        });    

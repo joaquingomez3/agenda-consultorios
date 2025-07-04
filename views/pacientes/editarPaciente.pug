@@ -23,23 +23,44 @@ block contenido
                             input(type="hidden", name="id", value=paciente.id)
 
                             .mb-3
-                                label.form-label(for="nombre") Nombre Completo:
+                                label.form-label(for="nombre" class="form-label fw-semibold") Nombre Completo:
                                 input.form-control(type="text", name="nombre", id="nombre", value=paciente.nombre_completo, placeholder="Ej: Juan Pérez")
 
                             .mb-3
-                                label.form-label(for="dni") DNI:
+                                label.form-label(for="dni" class="form-label fw-semibold") DNI:
                                 input.form-control(type="text", name="dni", id="dni", value=paciente.dni, placeholder="Ej: 30123456")
 
                             .mb-3
-                                label.form-label(for="motivoConsulta") Motivo de Consulta:
-                                input.form-control(type="text", name="motivoConsulta", id="motivoConsulta", value=paciente.motivo_consulta, placeholder="Opcional")
+                                label.form-label(for="fechaNacimiento" class="form-label fw-semibold") Fecha de Nacimiento:
+                                input.form-control(type="date", name="fechaNacimiento", id="fechaNacimiento", value=formatearFecha(paciente.fecha_nacimiento) )
+
+                            .mb-3  
+                                label(for="sexo" class="form-label fw-semibold") Seleccionar Sexo
+                                select.form-select(name="sexo", required)
+                                    option(value="" selected=paciente.sexo === "") -- Selecciona un Sexo --
+                                    option(value="Masculino" selected=paciente.sexo === "Masculino") Masculino
+                                    option(value="Femenino" selected=paciente.sexo === "Femenino") Femenino
+                                    option(value="Otro" selected=paciente.sexo === "Otro") Otro
+
 
                             .mb-3
-                                label.form-label(for="obraSocial") Obra Social:
-                                input.form-control(type="text", name="obraSocial", id="obraSocial", value=paciente.obra_social, placeholder="Ej: OSDE, IOMA, etc.")
+                                label(for="obraSocial" class="form-label fw-semibold") Seleccionar Obra Social
+                                select.form-select(name="obraSocial", required)
+                                    option(value="" selected=paciente.obra_social === "") -- Selecciona una Obra Social -- 
+                                    option(value="PAMI" selected=paciente.obra_social === "PAMI") PAMI
+                                    option(value="IOMA" selected=paciente.obra_social === "IOMA") IOMA
+                                    option(value="OSDE" selected=paciente.obra_social === "OSDE") OSDE
+                                    option(value="Swiss Medical" selected=paciente.obra_social === "Swiss Medical") Swiss Medical
+                                    option(value="Galeno" selected=paciente.obra_social === "Galeno") Galeno
+                                    option(value="OSECAC" selected=paciente.obra_social === "OSECAC") OSECAC
+                                    option(value="DoSEP" selected=paciente.obra_social === "DoSEP") DoSEP
+                                    option(value="Osfatun" selected=paciente.obra_social === "Osfatun") Osfatun
+                                    option(value="Sancor Salud" selected=paciente.obra_social === "Sancor Salud") Sancor Salud
+                                    option(value="Medicus" selected=paciente.obra_social === "Medicus") Medicus
+                                    option(value="No" selected=paciente.obra_social === "No") No tiene
 
                             .mb-3
-                                label.form-label(for="contacto") Teléfono:
+                                label.form-label(for="contacto" class="form-label fw-semibold") Teléfono:
                                 input.form-control(type="tel", name="contacto", id="contacto", value=paciente.datos_contacto, placeholder="Ej: 2664-XXXXXX")
 
                             button.btn.btn-success.w-100(type="submit")
