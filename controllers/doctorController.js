@@ -31,13 +31,26 @@ exports.crearDoctor = (req, res) => {
         });
     }
     
+     Doctor.obtenerDoctorPorDni(dni, (err, doctorExistente) => {
+        if (err) {
+            console.error('Error al verificar el DNI del doctor:', err);
+            return res.status(500).send('Error del servidor al verificar el DNI.');
+        }
 
-    Doctor.create(nombre, telefono, dni, mail, domicilio, (err, results) => {
-        if (err) throw new Error('Error al crear doctor');
+        if (doctorExistente) {
+            return res.render('doctores/crearDoctores', {
+                errores: ['Ya existe un doctor con el mismo DNI.'],
+                doctores: { nombre, telefono, dni, mail, domicilio }
+            });
+        }
 
-        
-        Doctor.getAll((err, results) => {
-            if (err) throw new Error('Error al listar doctores');
+        // Si no existe, lo creamos
+        Doctor.create(nombre, telefono, dni, mail, domicilio, (err, results) => {
+            if (err) {
+                console.error('Error al crear doctor:', err);
+                return res.status(500).send('Ocurrió un error al crear el doctor.');
+            }
+
             res.redirect('/doctores/?creado=1');
         });
     });

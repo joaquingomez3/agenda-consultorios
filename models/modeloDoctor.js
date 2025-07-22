@@ -100,6 +100,12 @@ GROUP BY d.id;
     connection.query(query, (err, results) => {
         callback(err, results);
     });
+
+},
+Doctor.obtenerDoctorPorDni = (dni, callback) => {
+    connection.query('SELECT * FROM doctores WHERE dni = ?', [dni], (err, results) => {
+        callback(err, results[0]);
+    });
 };
 
 module.exports = Doctor;

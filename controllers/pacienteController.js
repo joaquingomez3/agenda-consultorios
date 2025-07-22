@@ -21,26 +21,40 @@ exports.crearPaciente = (req, res) => {
     if (!obraSocial || obraSocial.trim().length === 0) errores.push('La obra social es obligatoria.');
     if (!contacto || !/^\d{7,15}$/.test(contacto)) errores.push('El teléfono debe tener entre 7 y 15 dígitos.');
 
+    // Si hay errores básicos, se renderiza de una
     if (errores.length > 0) {
         return res.render('pacientes/crearPaciente', {
             errores,
-            paciente: { nombre, dni, obraSocial, contacto }
+            paciente: { nombre, dni, fechaNacimiento, sexo, obraSocial, contacto }
         });
     }
 
-    Paciente.create(nombre, dni, fechaNacimiento, sexo, obraSocial, contacto, (err, results) => {
+    // Verificamos si el DNI ya está en uso
+    Paciente.obtenerPorDni(dni, (err, pacienteExistente) => {
         if (err) {
-            console.error('Error al crear paciente:', err); 
-            return res.status(500).send('Ocurrió un error al crear el paciente');
+            console.error('Error al verificar el DNI del paciente:', err);
+            return res.status(500).send('Error al verificar el DNI');
         }
-        
-        
-        Paciente.getAll((err, results) => {
-            if (err) throw new Error('Error al listar pacientes');
+
+        if (pacienteExistente) {
+            return res.render('pacientes/crearPaciente', {
+                errores: ['Ya existe un paciente con el mismo DNI.'],
+                paciente: { nombre, dni, fechaNacimiento, sexo, obraSocial, contacto }
+            });
+        }
+
+        // Si no existe, lo creamos
+        Paciente.create(nombre, dni, fechaNacimiento, sexo, obraSocial, contacto, (err, results) => {
+            if (err) {
+                console.error('Error al crear paciente:', err);
+                return res.status(500).send('Ocurrió un error al crear el paciente');
+            }
+
             res.redirect('/pacientes/?creado=1');
         });
     });
 };
+
 
 exports.editarPaciente = (req, res) => {
     const id = req.params.id;

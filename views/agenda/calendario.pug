@@ -1,53 +1,128 @@
 extends ../layout.pug
 
 block contenido
-  .container-fluid.mt-4
-    .mx-auto(style="max-width: 90%;")
-      h1.text-center.mb-4.text-primary.fw-bold Calendario de Turnos
-       input(type="hidden" name="id" id="agendaId" value=agenda.id)
-      #calendar(style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1);")
+    .container-fluid.mt-4
+        .mx-auto(style="max-width: 90%;")
+            a.btn.btn-secondary.mb-3(href=`/agendas/`)
+                i.bi.bi-arrow-left.me-2
+                | Volver
+            h1.text-center.mb-4.text-primary.fw-bold Calendario de Turnos
+            input(type="hidden" name="id" id="agendaId" value=agenda.id)
+            
+            #calendar(style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1);")
 
-  script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js")
-  script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js")
-  script.
-    document.addEventListener('DOMContentLoaded', function () {
-      const calendarEl = document.getElementById('calendar');
-      
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'es',
-        themeSystem: 'bootstrap5',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-          today: 'Hoy',
-          month: 'Mes',
-          week: 'Semana',
-          day: 'Día',
-          list: 'Lista'
-        },
-        dateClick: function (info) {
-          const fecha = info.dateStr;
-          const agendaId = document.getElementById('agendaId').value;
-          console.log(`Fecha seleccionada: ${agendaId} - ${fecha}`);
-          window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
-        },
-        height: 'auto',
-        selectable: true,
-        dayMaxEvents: true,
-        events: '/api/turnos/eventos' // <- Ruta que debe devolver eventos en formato JSON si querés mostrar turnos
-      });
+    script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js")
+    script.
+        document.addEventListener('DOMContentLoaded', function () { //Espera a que el contenido HTML del documento se haya cargado completamente antes de ejecutar la función interna.
+          const calendarEl = document.getElementById('calendar'); //Espera a que el contenido HTML del documento se haya cargado completamente antes de ejecutar la función interna.
+          const diasNoLaborales = !{JSON.stringify(diasNoLaborales)}; //Convierte el array de días no laborales a una cadena JSON para su uso en JavaScript.
+          const turnosPorFecha = !{JSON.stringify(turnos)}; //Convierte el objeto de turnos por fecha a una cadena JSON para su uso en JavaScript.
+          const user = !{JSON.stringify(usuario)}; //Convierte el objeto usuario a una cadena JSON para su uso en JavaScript.
+          const fechasFeriadas = !{JSON.stringify(fechasNoLaborales)}; //Convierte el array de fechas no laborales a una cadena JSON para su uso en JavaScript.
+          const calendar = new FullCalendar.Calendar(calendarEl, { //Crea una nueva instancia de FullCalendar en el contenedor calendarEl, pasándole una configuración personalizada como segundo argumento.
+            initialView: 'dayGridMonth', //Define la vista predeterminada como mes en formato de cuadrícula de días.
+            locale: 'es', //Establece el idioma del calendario en español.
+            themeSystem: 'bootstrap5', //Utiliza Bootstrap 5 para el estilo visual del calendario.
+            headerToolbar: { //Define los botones del encabezado:
+              left: 'prev,next today', //
+              center: 'title', //
+              right: 'dayGridMonth,timeGridWeek' // da las opciones para cambiar entre vistas de mes y semana.
+            },
+            buttonText: { //Traducción de los textos de botones
+              today: 'Hoy',
+              month: 'Mes',
+              week: 'Semana',
+              day: 'Día',
+              list: 'Lista'
+            },
+            datesSet: function(info) {
+                const fecha = info.startStr; //Obtiene la fecha de inicio del rango visible en el calendario.
+                const agendaId = document.getElementById('agendaId').value; //Obtiene
+                const mes = info.start.getMonth() + 1;
+                const año = info.start.getFullYear();
+                console.log(`Mes visible: ${mes}/${año}`);
+                //window.location.href = `/agendas/${agendaId}/mes/${fecha}`;
+                
+            },
+            dateClick: function (info) { //Función que se ejecuta al hacer clic en una fecha del calendario.
+              const fecha = info.dateStr;
+              const diaSemana = info.date.getDay(); //Obtiene el día de la semana de la fecha seleccionada (0-6, donde 0 es domingo).
+              const agendaId = document.getElementById('agendaId').value;
+              const hoy = new Date().toISOString().split('T')[0]; //Obtiene la fecha actual en formato YYYY-MM-DD.
+              if (fecha < hoy) { //Si la fecha seleccionada es anterior a hoy, muestra una alerta.
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Fecha inválida',
+                  text: 'No se pueden seleccionar fechas pasadas.',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#dc3545'
+                });
+                return;
+              }
+              if (fechasFeriadas.includes(fecha)) { //Si la fecha seleccionada es un feriado, muestra una alerta.
+                Swal.fire({
+                  icon: 'info',
+                  title: 'Feriado',
+                  text: 'No se pueden generar turnos en días no laborables.',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#ffc107'
+                });
+                return;
+              }
+              if (diasNoLaborales.includes(diaSemana)) { //Si el día seleccionado no es laborable, muestra una alerta.
+                Swal.fire({ 
+                  icon: 'info',
+                  title: 'Dia no laborable',
+                  text: 'El doctor no atiende este día.',
+                  confirmButtonText: 'Aceptar',
+                  confirmButtonColor: '#ffc107' });
+                return;
+            }
+              window.location.href = `/agendas/${agendaId}/turnos/${fecha}`;
+            },
+            dayCellDidMount: function (info) {
+              const fechaCelda = info.date.toISOString().split('T')[0];   // YYYY‑MM‑DD
 
-      calendar.render();
-    })
-  style.
-    #calendar {
-      transition: all 0.3s ease-in-out;
-    }
-    .fc-toolbar-title {
-      font-size: 1.8rem;
-      color: #0d6efd;
-    }
+              /* 1. Pintar feriados */
+              if (fechasFeriadas.includes(fechaCelda)) {
+                info.el.style.backgroundColor = '#ffe0e0';
+                info.el.style.color           = '#a00';
+                info.el.style.fontWeight      = 'bold';
+              }
+
+              /* 2. Mostrar cantidad de turnos */
+              if (turnosPorFecha[fechaCelda]) {
+                const { libres, reservados } = turnosPorFecha[fechaCelda];
+
+                const contenedor = document.createElement('div');
+                contenedor.style.fontSize  = '0.75rem';
+                contenedor.style.marginTop = '4px';
+                let html = `<span style="color:#198754;">✔️ Libres: ${libres}</span><br>`;
+
+                  if (user.rol != 'usuario') {
+                    html += `<span style="color:#dc3545;">❌ Ocupados: ${reservados}</span>`;
+                  }
+
+                  contenedor.innerHTML = html;
+                  info.el.appendChild(contenedor);
+                }
+            },
+
+            
+            height: 'auto',
+            selectable: true,
+            dayMaxEvents: true,
+             // 
+          });
+
+          calendar.render();
+        })
+    style.
+      #calendar {
+        transition: all 0.3s ease-in-out;
+      }
+      .fc-toolbar-title {
+        font-size: 1.8rem;
+        color: #0d6efd;
+      }

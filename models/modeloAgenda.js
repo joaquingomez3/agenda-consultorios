@@ -255,58 +255,7 @@ insertarTurnos(id, fechaSeleccionada, callback) {
             WHERE a.id = ? AND t.fechaTurno = ? ` , [id, fechaSeleccionada], callback);
     },
 
-//     crearTurnosDiarios(id,callback) {
-//          let inicio;
-//          let fin;
-//          let duracion;
-//          if (id == 1) {
-            
-//              inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
-//              fin = moment().startOf('day').add(12, 'hours'); // 12 PM
-//              duracion = 30; // Duración de cada turno en minutos
-//         } else if (id == 2) {
-            
-//              inicio = moment().startOf('day').add(14, 'hours'); // 14 PM
-//             fin = moment().startOf('day').add(20, 'hours'); // 20 PM
-//             duracion = 30;
-//         } else if (id == 3) {
-            
-//              inicio = moment().startOf('day').add(7, 'hours'); // 7 AM
-//              fin = moment().startOf('day').add(12, 'hours'); // 8 PM
-//             duracion = 30;
-//         } else {
-//            // Maneja el caso en que `id` no sea 1, 2 o 3
-//             return callback(new Error('ID de agenda no válido'));
-//         }
 
-//         const turnos = [];
-//         for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
-//             turnos.push([
-//                  id, // id_agenda
-//                  m.format('YYYY-MM-DD'), // fechaTurno
-//                m.format('HH:mm:ss'), // inicio
-//                 m.clone().add(duracion, 'minutes').format('HH:mm:ss'), // fin
-//                 2 // estado_turno (Libre)
-//             ]);
-//         }
-        
-//          // Inserta turnos y elimina turnos anteriores a hoy para esta agenda
-//         connection.query(
-//             'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
-//             [turnos],
-//             (insertErr, insertResults) => {
-//                 if (insertErr) return callback(insertErr);
-
-//                 const hoy = moment().format('YYYY-MM-DD');
-//                 connection.query(
-//                     'DELETE FROM turno WHERE fechaTurno < ? AND id_agenda = ?',
-//                     [hoy, id],
-//                     callback
-//                 );
-//             }
-//         );
-
-// },
 crearTurnosDiarios(id, callback) {
     connection.query('SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?', [id], (err, results) => {
         if (err) return callback(err);
@@ -422,7 +371,14 @@ eliminarSobreturnosViejos (id, callback) {
     });
 },
 
- verSobreturnosPorAgenda: (idAgenda, callback) => {
+eliminarTurnosViejos (id, callback) {
+    const sql = 'DELETE FROM turno WHERE id_agenda = ? AND fechaTurno < CURDATE()';
+    connection.query(sql, [id], (err, result) => {
+        if (err) return callback(err);
+    });
+},
+
+verSobreturnosPorAgenda: (idAgenda, callback) => {
     const sql = `
         SELECT s.*, p.nombre_completo AS paciente_nombre, d.nombre_completo AS doctor_nombre
         FROM sobreturnos s
@@ -435,59 +391,235 @@ eliminarSobreturnosViejos (id, callback) {
 },
 
 
-  asignarPacienteASobreturno: (sobreturnoId, pacienteId, motivo, callback) => {
+asignarPacienteASobreturno: (sobreturnoId, pacienteId, motivo, callback) => {
     const sql = `UPDATE sobreturnos SET id_paciente = ?, motivo = ?, estado_turno = 'Reservado' WHERE id = ?`;
     connection.query(sql, [pacienteId, motivo, sobreturnoId], callback);
-  },
+},
 
 
 //----------------------------------------------------------------
 
 // ------ codigo de prueba ----------------////
 insertarTurnosSiNoExisten(id, fecha, callback) {
+    // Obtener el primer y último día del mes
+    const inicioMes = moment(fechaReferencia).startOf('month');
+    const finMes = moment(fechaReferencia).endOf('month');
   // Consultar si ya hay turnos en esa fecha para la agenda
-  connection.query(
-    'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',
-    [id, fecha],
-    (err, results) => {
-      if (err) return callback(err);
+    connection.query(
+        'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',
+        [id, fecha],
+        (err, results) => {
+        if (err) return callback(err);
 
-      if (results[0].cantidad > 0) {
-        // Ya existen turnos para esa fecha
-        return callback(null);
-      }
+        if (results[0].cantidad > 0) {
+            // Ya existen turnos para esa fecha
+            return callback(null);
+        }
 
-      // Si no existen, generarlos (tomar horas y duración de agenda)
-      connection.query(
+        // Si no existen, generarlos (tomar horas y duración de agenda)
+        connection.query(
+            'SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?',
+            [id],
+            (err, resAgenda) => {
+            if (err) return callback(err);
+            if (resAgenda.length === 0) return callback(new Error('Agenda no encontrada'));
+
+            const { horaInicio, horaFin, duracion } = resAgenda[0];
+
+            const inicio = moment(`${fecha} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+            const fin = moment(`${fecha} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
+            const turnos = [];
+
+            for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+                turnos.push([id, fecha, m.format('HH:mm:ss'), m.clone().add(duracion, 'minutes').format('HH:mm:ss'), 2]);
+            }
+
+            connection.query(
+                'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+                [turnos],
+                (insertErr) => {
+                if (insertErr) return callback(insertErr);
+                callback(null);
+                }
+            );
+            }
+        );
+        }
+    );
+    },
+
+insertarTurnosMesSiNoExisten(id, fechaReferencia, callback) {
+    // Obtener el primer y último día del mes
+    
+    const referencia= moment(fechaReferencia, 'YYYY-MM-DD');
+    //const inicioMes = moment(fechaReferencia).startOf('month');
+    const finMes = moment(fechaReferencia).endOf('month');
+    
+    // Obtener la configuración de la agenda
+    connection.query(
         'SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?',
         [id],
         (err, resAgenda) => {
-          if (err) return callback(err);
-          if (resAgenda.length === 0) return callback(new Error('Agenda no encontrada'));
+            if (err) return callback(err);
+            if (resAgenda.length === 0) return callback(new Error('Agenda no encontrada'));
 
-          const { horaInicio, horaFin, duracion } = resAgenda[0];
-          const inicio = moment(`${fecha} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
-          const fin = moment(`${fecha} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
-          const turnos = [];
+            const { horaInicio, horaFin, duracion } = resAgenda[0];
 
-          for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
-            turnos.push([id, fecha, m.format('HH:mm:ss'), m.clone().add(duracion, 'minutes').format('HH:mm:ss'), 2]);
-          }
+            // Recorrer cada día del mes
+            const fechasProcesadas = [];
+            const errores = [];
 
-          connection.query(
-            'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
-            [turnos],
-            (insertErr) => {
-              if (insertErr) return callback(insertErr);
-              callback(null);
+            let diaActual = referencia.clone();
+
+            function procesarSiguienteDia() {
+                if (diaActual.isAfter(finMes)) {
+                    // Finalizado el mes
+                    return callback(errores.length ? errores : null, fechasProcesadas);
+                }
+
+                const fecha = diaActual.format('YYYY-MM-DD');
+
+                // Verificar si ya hay turnos para ese día
+                connection.query(
+                    'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',
+                    [id, fecha],
+                    (err, results) => {
+                        if (err) {
+                            errores.push({ fecha, error: err });
+                            diaActual.add(1, 'day');
+                            return procesarSiguienteDia();
+                        }
+
+                        if (results[0].cantidad > 0) {
+                            // Ya hay turnos para este día, saltar
+                            diaActual.add(1, 'day');
+                            return procesarSiguienteDia();
+                        }
+
+                        // Generar los turnos
+                        const inicio = moment(`${fecha} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+                        const fin = moment(`${fecha} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
+                        const turnos = [];
+
+                        for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+                            turnos.push([id, fecha, m.format('HH:mm:ss'), m.clone().add(duracion, 'minutes').format('HH:mm:ss'), 2]);
+                        }
+
+                        connection.query(
+                            'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+                            [turnos],
+                            (insertErr) => {
+                                if (insertErr) {
+                                    errores.push({ fecha, error: insertErr });
+                                } else {
+                                    fechasProcesadas.push(fecha);
+                                }
+                                diaActual.add(1, 'day');
+                                procesarSiguienteDia();
+                            }
+                        );
+                    }
+                );
             }
-          );
-        }
-      );
-    }
-  );
-},
 
+            // Iniciar proceso
+            procesarSiguienteDia();
+        }
+    );
+},
+insertarTurnosMesSiguiente(id, fechaReferencia, callback) {
+    // Obtener el primer y último día del mes
+    
+    const inicioMes = moment(fechaReferencia).startOf('month');
+    const finMes = moment(fechaReferencia).endOf('month');
+    
+    // Obtener la configuración de la agenda
+    connection.query(
+        'SELECT horaInicio, horaFin, duracion FROM agenda WHERE id = ?',
+        [id],
+        (err, resAgenda) => {
+            if (err) return callback(err);
+            if (resAgenda.length === 0) return callback(new Error('Agenda no encontrada'));
+
+            const { horaInicio, horaFin, duracion } = resAgenda[0];
+
+            // Recorrer cada día del mes
+            const fechasProcesadas = [];
+            const errores = [];
+
+            let diaActual = inicioMes.clone();
+
+            function procesarSiguienteDia() {
+                if (diaActual.isAfter(finMes)) {
+                    // Finalizado el mes
+                    return callback(errores.length ? errores : null, fechasProcesadas);
+                }
+
+                const fecha = diaActual.format('YYYY-MM-DD');
+
+                // Verificar si ya hay turnos para ese día
+                connection.query(
+                    'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',
+                    [id, fecha],
+                    (err, results) => {
+                        if (err) {
+                            errores.push({ fecha, error: err });
+                            diaActual.add(1, 'day');
+                            return procesarSiguienteDia();
+                        }
+
+                        if (results[0].cantidad > 0) {
+                            // Ya hay turnos para este día, saltar
+                            diaActual.add(1, 'day');
+                            return procesarSiguienteDia();
+                        }
+
+                        // Generar los turnos
+                        const inicio = moment(`${fecha} ${horaInicio}`, 'YYYY-MM-DD HH:mm:ss');
+                        const fin = moment(`${fecha} ${horaFin}`, 'YYYY-MM-DD HH:mm:ss');
+                        const turnos = [];
+
+                        for (let m = inicio.clone(); m.isBefore(fin); m.add(duracion, 'minutes')) {
+                            turnos.push([id, fecha, m.format('HH:mm:ss'), m.clone().add(duracion, 'minutes').format('HH:mm:ss'), 2]);
+                        }
+
+                        connection.query(
+                            'INSERT INTO turno (id_agenda, fechaTurno, inicio, fin, estado_turno) VALUES ?',
+                            [turnos],
+                            (insertErr) => {
+                                if (insertErr) {
+                                    errores.push({ fecha, error: insertErr });
+                                } else {
+                                    fechasProcesadas.push(fecha);
+                                }
+                                diaActual.add(1, 'day');
+                                procesarSiguienteDia();
+                            }
+                        );
+                    }
+                );
+            }
+
+            // Iniciar proceso
+            procesarSiguienteDia();
+        }
+    );
+},
+obtenerTurnosPorAgenda: (id, callback) => {
+     connection.query(
+        `SELECT fechaTurno AS fecha, 
+                SUM(CASE WHEN estado_turno = 2 THEN 1 ELSE 0 END) AS libres,
+                SUM(CASE WHEN estado_turno != 2 THEN 1 ELSE 0 END) AS reservados
+         FROM turno 
+         WHERE id_agenda = ?
+         GROUP BY fechaTurno`,
+        [id],
+        (err, results) => {
+            if (err) return callback(err);
+            callback(null, results);
+        }
+    );
+},
 //----------------------------------------------------------//
 cancelarTurno  (turnoId, callback)  {
     const sql = `
@@ -502,8 +634,34 @@ cancelarTurno  (turnoId, callback)  {
         }
         callback(null, result);
     });
-}
+},
+
+diasLaboralesPorAgenda(id, callback) {
+    const sql = 'SELECT dias FROM agenda WHERE id = ?';
     
+    const diaTextoANumero = {
+    'domingo': 0,
+    'lunes': 1,
+    'martes': 2,
+    'miercoles': 3,
+    'jueves': 4,
+    'viernes': 5,
+    'sabado': 6
+    };
+
+    connection.query(sql, [id], (err, results) => {
+        if (err) return callback(err);
+        if (results.length === 0) return callback(new Error('Agenda no encontrada'));
+        
+        const diasLaboralesTexto = results[0].dias.split('-').map(dia => dia.trim());
+        
+        const diasLaborales = diasLaboralesTexto.map(dia => diaTextoANumero[dia]);
+        
+        callback(null, diasLaborales);
+    });
+    
+}
 };
+
 module.exports = Agenda;
 

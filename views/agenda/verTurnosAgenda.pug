@@ -3,7 +3,7 @@ extends ../layout.pug
 block contenido
     .container-fluid.mt-4
         .mx-auto(style="width: 90%;")
-            a.btn.btn-secondary.mb-3(href="/agendas/")
+            a.btn.btn-secondary.mb-3(href="../calendario")
                 i.bi.bi-arrow-left.me-2
                 | Volver
 
@@ -134,7 +134,7 @@ block contenido
             if (tabla) {
             new DataTable(tabla, {
                 language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
                 },
                 pageLength: 10
             });

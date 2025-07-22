@@ -3,8 +3,8 @@ extends ../layout.pug
 block contenido
     .container.mt-5
         a.btn.btn-secondary.mb-3(href="/doctores/")
-                i.bi.bi-arrow-left.me-2
-                | Volver
+            i.bi.bi-arrow-left.me-2
+            | Volver
 
         .row.justify-content-center
             .col-md-8.col-lg-6
@@ -22,24 +22,57 @@ block contenido
                         form(action="/doctores/" method="post")
                             .mb-3
                                 label.form-label(for="nombre") Nombre Completo:
-                                input.form-control(type="text", name="nombre", id="nombre", placeholder="Ej: Dra. María López")
+                                input.form-control(
+                                    type="text",
+                                    name="nombre",
+                                    id="nombre",
+                                    placeholder="Ej: Dra. María López",
+                                    required,
+                                    value=(doctores && doctores.nombre) || ''
+                                )
 
                             .mb-3
                                 label.form-label(for="telefono") Teléfono:
-                                input.form-control(type="text", name="telefono", id="telefono", placeholder="Ej: 2664-XXXXXX")
+                                input.form-control(
+                                    type="text",
+                                    name="telefono",
+                                    id="telefono",
+                                    placeholder="Ej: 2664-XXXXXX",
+                                    required,
+                                    value=(doctores && doctores.telefono) || ''
+                                )
 
                             .mb-3
                                 label.form-label(for="dni") DNI:
-                                input.form-control(type="text", name="dni", id="dni", placeholder="Ej: 30123456")
+                                input.form-control(
+                                    type="text",
+                                    name="dni",
+                                    id="dni",
+                                    placeholder="Ej: 30123456",
+                                    required,
+                                    value=(doctores && doctores.dni) || ''
+                                )
 
                             .mb-3
                                 label.form-label(for="mail") Correo Electrónico:
-                                input.form-control(type="text", name="mail", id="mail", placeholder="Ej: doctor@email.com")
-
+                                input.form-control(
+                                    type="email",
+                                    name="mail",
+                                    id="mail",
+                                    placeholder="Ej: doctor@email.com",
+                                    required,
+                                    value=(doctores && doctores.mail) || ''
+                                )
                             .mb-3
                                 label.form-label(for="domicilio") Domicilio:
-                                input.form-control(type="text", name="domicilio", id="domicilio", placeholder="Ej: Av. San Martín 123")
+                                input.form-control(
+                                    type="text",
+                                    name="domicilio",
+                                    id="domicilio",
+                                    placeholder="Ej: Av. San Martín 123",
+                                    value=(doctores && doctores.domicilio) || ''
+                                )
 
                             button.btn.btn-success.w-100(type="submit")
                                 i.bi.bi-person-plus-fill.me-1
-                                | Agregar Doctor
+                                | Agregar Doctor    

@@ -19,4 +19,7 @@ router.get('/:id/sobreturnos/crear', chequeo, agendaController.vistaCrearSobretu
 router.post('/:id/sobreturnos/crear', chequeo, agendaController.crearSobreturno);
 router.post('/turnos/:id/cancelar', agendaController.cancelarTurno);
 router.get('/:id/calendario', chequeo, agendaController.vistaCalendario);
+router.get('/:id/mes/:fecha', chequeo, agendaController.crearTurnosMesSiguiente);
+router.get('/vistaCrearFeriado', chequeo, agendaController.vistaCrearFeriado);
+router.post('/crearFeriado', agendaController.crearFeriado);
 module.exports = router;

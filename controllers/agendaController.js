@@ -149,8 +149,8 @@ exports.verTurnosAgenda = (req, res) => {
             console.error('Error al eliminar sobreturnos viejos:', err);
         }
     });
-    AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
-        if (err) return res.status(500).json({ error: 'Error al generar turnos' });
+    // AgendaModel.insertarTurnosSiNoExisten(id, fecha, (err) => {
+    //     if (err) return res.status(500).json({ error: 'Error al generar turnos' });
 
     AgendaModel.turnosPorFecha(id, fecha, (err, turnos) => {
         if (err) return res.status(500).json({ error: 'Error al obtener turnos' });
@@ -170,7 +170,7 @@ exports.verTurnosAgenda = (req, res) => {
         });
     });
     });
-});
+
     
 };
 
@@ -342,11 +342,60 @@ exports.cancelarTurno = (req, res) => {
 //----------------------------------------------------------//
 exports.vistaCalendario = (req, res) => {
     const id = req.params.id;
+    const fecha = req.params.fecha || moment().format('YYYY-MM-DD'); // Fecha actual si no se pasa fecha
+    
+    const todosLosDias = [0, 1, 2, 3, 4, 5, 6];
+    
+    
+    AgendaModel.insertarTurnosMesSiNoExisten(id, fecha, (err) => {
+        if (err) {
+            console.error('Error al generar turnos:', err);
+            return res.status(500).json({ error: 'Error al generar turnos' });
+        }
+    });
+    AgendaModel.eliminarTurnosViejos(id, (err) => {
+        if (err) {
+            console.error('Error al eliminar turnos viejos:', err);
+        }
+    });
+    FeriadosModel.getAll((err, feriados) => {
+        if (err) {
+            console.error('Error al obtener feriados:', err);
+            return res.status(500).json({ error: 'Error al obtener feriados' });
+        }
+        const fechasNoLaborales = feriados.map(f => moment(f.fecha).format('YYYY-MM-DD'));
     AgendaModel.obtenerAgendaPorId(id, (err, agenda) => {
         if (err || agenda.length === 0) return res.status(500).send("Error al cargar agenda");
-
-        res.render('agenda/calendario', {agenda: agenda[0], usuario: req.user });
     
+
+    AgendaModel.diasLaboralesPorAgenda(id, (err, diasLaborales) => {  
+        if (err) {
+            console.error('Error al obtener días laborales:', err);
+            return res.status(500).json({ error: 'Error al obtener días laborales' });
+        }
+        const diasNoLaborales = todosLosDias.filter(d => !diasLaborales.includes(d));
+    AgendaModel.obtenerTurnosPorAgenda(id, (err, turnos) => {
+            if (err) {
+                console.error('Error al obtener turnos:', err);
+                return res.status(500).json({ error: 'Error al obtener turnos' });
+            }
+            // Agrupar turnos por fecha
+            const turnosPorFecha = {};
+
+            turnos.forEach(t => {
+                const fecha = moment(t.fecha).format('YYYY-MM-DD');
+                turnosPorFecha[fecha] = {
+                    libres: parseInt(t.libres, 10),
+                    reservados: parseInt(t.reservados, 10)
+                };
+            });
+
+    
+        res.render('agenda/calendario', {agenda: agenda[0], usuario: req.user, fechasNoLaborales, diasNoLaborales, turnos: turnosPorFecha });
+    });
+    
+    });
+    });
     });
 };
 function formatearFecha(fechaStr) {
@@ -380,5 +429,64 @@ function esDiaValidoParaAgenda(fechaISO, diasLaboralesTexto) {
     const diasPermitidos = diasLaboralesTexto.split('-,').map(dia => diasTextoAIndice[dia.trim()]);
     return diasPermitidos.includes(diaSemana);
 }
+exports.vistaCrearFeriado = (req, res) => {
+    res.render('agenda/crearFeriado', { usuario: req.user });
+}
+
+exports.crearTurnosMesSiguiente = (req, res) => {
+    const id = req.params.id;
+    const fechaReferencia = moment().add(1, 'month').format('YYYY-MM-DD'); // Fecha del primer día del mes siguiente
+
+    AgendaModel.insertarTurnosMesSiguiente(id, fechaReferencia, (err) => {
+        if (err) {
+            console.error('Error al generar turnos:', err);
+            return res.status(500).json({ error: 'Error al generar turnos' });
+        }
+       
+    });
+}
+exports.crearFeriado = (req, res) => {
+    const { fecha, descripcion, agendaId } = req.body;
+
+    if (!fecha || !descripcion) {
+        return res.render('agenda/crearFeriado', {
+            errores: ['Fecha y descripción son requeridos'],
+            agendaId,
+            usuario: req.user,
+            datosIngresados: req.body
+        });
+    }
+
+    FeriadosModel.getAll((err, feriados) => {
+        if (err) {
+            console.error('Error al obtener feriados:', err);
+            return res.status(500).json({ error: 'Error al obtener feriados' });
+        }
+
+        // Verificar si ya existe por fecha o descripción
+        const yaExiste = feriados.some(f =>
+            f.fecha === fecha || f.descripcion.toLowerCase() === descripcion.toLowerCase()
+        );
+
+        if (yaExiste) {
+            return res.render('agenda/crearFeriado', {
+                errores: ['Ya existe un feriado con esa fecha o descripción'],
+                agendaId,
+                usuario: req.user,
+                datosIngresados: req.body
+            });
+        }
+
+        // Crear si no existe
+        FeriadosModel.crear(fecha, descripcion, (err) => {
+            if (err) {
+                console.error('Error al crear feriado:', err);
+                return res.status(500).json({ error: 'Error al crear feriado' });
+            }
+
+            res.redirect(`/agendas/${agendaId}/calendario?creado=1`);
+        });
+    });
+};
 
 
