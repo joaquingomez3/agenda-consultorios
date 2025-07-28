@@ -19,6 +19,8 @@ block contenido
           const diasNoLaborales = !{JSON.stringify(diasNoLaborales)}; //Convierte el array de días no laborales a una cadena JSON para su uso en JavaScript.
           const turnosPorFecha = !{JSON.stringify(turnos)}; //Convierte el objeto de turnos por fecha a una cadena JSON para su uso en JavaScript.
           const user = !{JSON.stringify(usuario)}; //Convierte el objeto usuario a una cadena JSON para su uso en JavaScript.
+          let ultimaFechaVisible = null;
+          let ultimoBotonPresionado = null;
           const fechasFeriadas = !{JSON.stringify(fechasNoLaborales)}; //Convierte el array de fechas no laborales a una cadena JSON para su uso en JavaScript.
           const calendar = new FullCalendar.Calendar(calendarEl, { //Crea una nueva instancia de FullCalendar en el contenedor calendarEl, pasándole una configuración personalizada como segundo argumento.
             initialView: 'dayGridMonth', //Define la vista predeterminada como mes en formato de cuadrícula de días.
@@ -36,13 +38,60 @@ block contenido
               day: 'Día',
               list: 'Lista'
             },
+            // 🟢 Escuchamos clics manualmente en botones de navegación
+            customButtons: {
+              prev: {
+                text: '←',
+                click: function () {
+                  ultimoBotonPresionado = 'prev';
+                  calendar.prev();
+                }
+              },
+              next: {
+                text: '→',
+                click: function () {
+                  ultimoBotonPresionado = 'next';
+                  calendar.next();
+                }
+              },
+              today: {
+                text: 'Hoy',
+                click: function () {
+                  ultimoBotonPresionado = 'today';
+                  calendar.today();
+                }
+              }
+            },
             datesSet: function(info) {
-                const fecha = info.startStr; //Obtiene la fecha de inicio del rango visible en el calendario.
-                const agendaId = document.getElementById('agendaId').value; //Obtiene
-                const mes = info.start.getMonth() + 1;
+              if (ultimoBotonPresionado !== 'next') {
+                return;
+              }
+                const agendaId = document.getElementById('agendaId').value;
                 const año = info.start.getFullYear();
-                console.log(`Mes visible: ${mes}/${año}`);
-                //window.location.href = `/agendas/${agendaId}/mes/${fecha}`;
+                const mes = String(info.start.getMonth() + 2).padStart(2, '0'); // meses van de 0 a 11
+                const fechaInicioMes = `${año}-${mes}-01`;
+
+
+                if (!agendaId || !fechaInicioMes) return;
+
+               
+
+                const url = `/agendas/${agendaId}/mes/${fechaInicioMes}`;
+                console.log("Llamando a:", url);
+
+                fetch(url)
+                  .then(response => {
+                    console.log("STATUS RESPONSE:", response.status);
+                    if (!response.ok) throw new Error('Error al verificar o crear turnos del mes');
+                    return response.json();
+                  })
+                  .then(data => {
+                    console.log('Respuesta al crear/verificar turnos:', data);
+                    location.reload(); // O actualizar los datos si no querés recargar
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                  });
                 
             },
             dateClick: function (info) { //Función que se ejecuta al hacer clic en una fecha del calendario.

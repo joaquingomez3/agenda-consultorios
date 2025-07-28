@@ -449,7 +449,7 @@ insertarTurnosSiNoExisten(id, fecha, callback) {
     },
 
 insertarTurnosMesSiNoExisten(id, fechaReferencia, callback) {
-    // Obtener el primer y último día del mes
+    
     
     const referencia= moment(fechaReferencia, 'YYYY-MM-DD');
     //const inicioMes = moment(fechaReferencia).startOf('month');
@@ -556,7 +556,11 @@ insertarTurnosMesSiguiente(id, fechaReferencia, callback) {
                 }
 
                 const fecha = diaActual.format('YYYY-MM-DD');
-
+                
+                if (diaActual.isBefore(moment().startOf('day'))) {
+                    diaActual.add(1, 'day');
+                    return procesarSiguienteDia();
+                }
                 // Verificar si ya hay turnos para ese día
                 connection.query(
                     'SELECT COUNT(*) AS cantidad FROM turno WHERE id_agenda = ? AND fechaTurno = ?',

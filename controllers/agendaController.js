@@ -451,8 +451,8 @@ exports.vistaCrearFeriado = (req, res) => {
 
 exports.crearTurnosMesSiguiente = (req, res) => {
     const id = req.params.id;
-    const fechaReferencia = moment().add(1, 'month').format('YYYY-MM-DD'); // Fecha del primer día del mes siguiente
-
+    const fechaReferencia = req.params.fecha || moment().add(1, 'month').startOf('month').format('YYYY-MM-DD'); // Fecha del primer día del mes siguiente
+    console.log("Generando turnos para el mes siguiente a partir de:", fechaReferencia);
     AgendaModel.insertarTurnosMesSiguiente(id, fechaReferencia, (err) => {
         if (err) {
             console.error('Error al generar turnos:', err);
