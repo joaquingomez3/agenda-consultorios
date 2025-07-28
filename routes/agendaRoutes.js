@@ -15,6 +15,7 @@ router.get('/:id/turnos', chequeo, agendaController.verTurnosAgenda);
 router.get('/:id/turnos/:fecha', chequeo, agendaController.verTurnosAgenda);
 router.get('/asignar/:turnoId', chequeo, agendaController.mostrarAsignacionPaciente);
 router.post('/asignar', agendaController.asignarPaciente);
+router.get('/buscar', agendaController.buscar);
 router.get('/:id/sobreturnos/crear', chequeo, agendaController.vistaCrearSobreturno);
 router.post('/:id/sobreturnos/crear', chequeo, agendaController.crearSobreturno);
 router.post('/turnos/:id/cancelar', agendaController.cancelarTurno);

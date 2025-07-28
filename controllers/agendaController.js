@@ -226,6 +226,22 @@ exports.mostrarAsignacionPaciente = (req, res) => {
 });
 }
 
+
+exports.buscar = (req, res) => {
+    const query = req.query.q;
+    if (!query) return res.json([]);
+
+    PacienteModel.buscarPorNombreODni(query, (err, resultados) => {
+        if (err) {
+            console.error("Error al buscar pacientes:", err);
+            return res.status(500).json([]);
+        }
+
+        res.json(resultados);
+    });
+};
+
+
 exports.asignarPaciente = (req, res) => {
     const { turno_id, paciente_id, motivo, returnUrl} = req.body;
     

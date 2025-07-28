@@ -66,12 +66,22 @@ Paciente.editar = (nombre, dni, obraSocial, tel, callback) => {
 // Buscar paciente por DNI o nombre
 Paciente.buscarPacientePorDniONombre = async (dni, nombre) => {
     const [result] = await db.query(
-      'SELECT id FROM paciente WHERE dni = ? OR nombre = ?',
-      [dni, nombre]
+        'SELECT id FROM paciente WHERE dni = ? OR nombre = ?',
+        [dni, nombre]
     );
     return result.length > 0 ? result[0].id : null;
-  };
+    };
 
-
+Paciente.buscarPorNombreODni = (query, callback) => {
+    connection.query(
+        'SELECT id, nombre_completo, dni FROM paciente WHERE nombre_completo LIKE ? OR dni LIKE ? LIMIT 10',
+        [`%${query}%`, `%${query}%`],
+        (err, results) => {
+            callback(err, results);
+            
+        }
+        
+    );
+};
 
 module.exports = Paciente;
