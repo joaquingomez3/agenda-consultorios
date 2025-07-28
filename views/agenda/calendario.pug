@@ -135,7 +135,7 @@ block contenido
 
               /* 1. Pintar feriados */
               if (fechasFeriadas.includes(fechaCelda)) {
-                info.el.style.backgroundColor = '#ffe0e0';
+                info.el.style.backgroundColor = '#9083dbff';
                 info.el.style.color           = '#a00';
                 info.el.style.fontWeight      = 'bold';
               }
@@ -143,7 +143,11 @@ block contenido
               /* 2. Mostrar cantidad de turnos */
               if (turnosPorFecha[fechaCelda]) {
                 const { libres, reservados } = turnosPorFecha[fechaCelda];
-
+              if (libres > 0) {
+                info.el.style.backgroundColor = '#a6e474ff'; // Color de fondo para días sin turnos
+              } else  {
+                info.el.style.backgroundColor = '#ec8a8aff'; // Color de fondo para días con turnos
+              }
                 const contenedor = document.createElement('div');
                 contenedor.style.fontSize  = '0.75rem';
                 contenedor.style.marginTop = '4px';

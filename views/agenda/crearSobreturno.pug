@@ -24,15 +24,10 @@ block contenido
                         input.form-control(type="time", name="inicio", required, value=(formData && formData.inicio) ? formData.inicio : '')
 
 
-                    .mb-3
-                        label.form-label(for="paciente_id") Paciente:
-                        select.form-select(name="paciente_id", required)
-                            option(value="") -- Seleccionar paciente --
-                            each paciente in pacientes
-                                option(
-                                    value=paciente.id,
-                                    selected=(formData && formData.paciente_id == paciente.id) ? true : false
-                                    )= paciente.nombre_completo
+                    .mb-3.position-relative
+                                    label(for="paciente_id" class="form-label fw-semibold") Buscar paciente (nombre o DNI)
+                                    select.form-control#paciente_id(name="paciente_id", required style="width: 100%")
+                                        option(value="") -- Buscar y seleccionar un paciente --
 
 
                     .mb-3
@@ -47,3 +42,40 @@ block contenido
                 a.btn.btn-outline-secondary.mt-4(href="/agendas")
                     i.bi.bi-arrow-left-circle.me-1
                     | Volver
+    script.
+        $(document).ready(function() {
+            $('#paciente_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Escribí el nombre o DNI del paciente',
+                ajax: {
+                    url: '/agendas/buscar',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.map(p => ({
+                                id: p.id,
+                                text: p.nombre_completo + ' (' + p.dni + ')'
+                            }))
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2
+            });
+        });
+    style. 
+        .select2-container--bootstrap-5 .select2-selection {
+            min-height: 38px;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            line-height: 2rem;
+        }
