@@ -252,7 +252,7 @@ exports.asignarPaciente = (req, res) => {
             return res.status(500).send("Error al asignar paciente.");
         }
 
-        console.log(turno_id);
+        
     AgendaModel.obtenerIdAgendaPorTurno(turno_id, (err, agendaId) => {
             if (err || !agendaId) {
                 return res.status(500).json({ error: 'Error al obtener el ID de la agenda' });
@@ -343,7 +343,7 @@ exports.verTurnosAgendaPorFecha = (req, res) => {
 //----------------------------------------------------------//
 exports.cancelarTurno = (req, res) => {
     const turnoId = req.params.id;
-    console.log("ID del turno a cancelar:", turnoId);
+    
 
     AgendaModel.cancelarTurno(turnoId, (err) => {
         if (err) {
@@ -452,7 +452,7 @@ exports.vistaCrearFeriado = (req, res) => {
 exports.crearTurnosMesSiguiente = (req, res) => {
     const id = req.params.id;
     const fechaReferencia = req.params.fecha || moment().add(1, 'month').startOf('month').format('YYYY-MM-DD'); // Fecha del primer día del mes siguiente
-    console.log("Generando turnos para el mes siguiente a partir de:", fechaReferencia);
+    
     AgendaModel.insertarTurnosMesSiguiente(id, fechaReferencia, (err) => {
         if (err) {
             console.error('Error al generar turnos:', err);
