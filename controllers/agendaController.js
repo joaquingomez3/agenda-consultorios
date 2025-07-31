@@ -379,7 +379,13 @@ exports.vistaCalendario = (req, res) => {
             console.error('Error al obtener feriados:', err);
             return res.status(500).json({ error: 'Error al obtener feriados' });
         }
-        const fechasNoLaborales = feriados.map(f => moment(f.fecha).format('YYYY-MM-DD'));
+        const añoActual = moment().year();
+
+        const fechasNoLaborales = feriados.map(f => {
+            const fecha = moment(`${añoActual}-${f.mes}-${f.dia}`, 'YYYY-M-D').format('YYYY-MM-DD');
+            return fecha;
+        });
+        console.log('Fechas no laborales:', fechasNoLaborales);
     AgendaModel.obtenerAgendaPorId(id, (err, agenda) => {
         if (err || agenda.length === 0) return res.status(500).send("Error al cargar agenda");
     
@@ -407,7 +413,7 @@ exports.vistaCalendario = (req, res) => {
             });
 
     
-        res.render('agenda/calendario', {agenda: agenda[0], usuario: req.user, fechasNoLaborales, diasNoLaborales, turnos: turnosPorFecha });
+        res.render('agenda/calendario', {agenda: agenda[0], usuario: req.user, fechasNoLaborales: JSON.stringify(fechasNoLaborales), diasNoLaborales, turnos: turnosPorFecha });
     });
     
     });
@@ -462,11 +468,11 @@ exports.crearTurnosMesSiguiente = (req, res) => {
     });
 }
 exports.crearFeriado = (req, res) => {
-    const { fecha, descripcion, agendaId } = req.body;
+    const { dia, mes, descripcion, agendaId } = req.body;
 
-    if (!fecha || !descripcion) {
+    if (!dia || !mes || !descripcion) {
         return res.render('agenda/crearFeriado', {
-            errores: ['Fecha y descripción son requeridos'],
+            errores: ['Día, mes y descripción son requeridos'],
             agendaId,
             usuario: req.user,
             datosIngresados: req.body
@@ -479,14 +485,15 @@ exports.crearFeriado = (req, res) => {
             return res.status(500).json({ error: 'Error al obtener feriados' });
         }
 
-        // Verificar si ya existe por fecha o descripción
+        // Verificar si ya existe por día y mes o descripción
         const yaExiste = feriados.some(f =>
-            f.fecha === fecha || f.descripcion.toLowerCase() === descripcion.toLowerCase()
+            (parseInt(f.dia) === parseInt(dia) && parseInt(f.mes) === parseInt(mes)) ||
+            f.descripcion.toLowerCase() === descripcion.toLowerCase()
         );
 
         if (yaExiste) {
             return res.render('agenda/crearFeriado', {
-                errores: ['Ya existe un feriado con esa fecha o descripción'],
+                errores: ['Ya existe un feriado con ese día y mes, o con esa descripción'],
                 agendaId,
                 usuario: req.user,
                 datosIngresados: req.body
@@ -494,13 +501,13 @@ exports.crearFeriado = (req, res) => {
         }
 
         // Crear si no existe
-        FeriadosModel.crear(fecha, descripcion, (err) => {
+        FeriadosModel.crear(dia, mes, descripcion, (err) => {
             if (err) {
                 console.error('Error al crear feriado:', err);
                 return res.status(500).json({ error: 'Error al crear feriado' });
             }
 
-            res.redirect(`/agendas/${agendaId}/calendario?creado=1`);
+            res.redirect(`/agendas/?creado=1`);
         });
     });
 };

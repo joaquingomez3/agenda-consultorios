@@ -9,12 +9,16 @@ Feriados.getAll = (callback) => {
     });
 };
 
-Feriados.crear = (fecha, descripcion, callback) => {
-    
-    connection.query('INSERT INTO diasnolaborables (fecha, descripcion) VALUES (?, ?)', [fecha, descripcion], (err, results) => {
-        callback(err, results);
-    });
+Feriados.crear = (dia, mes, descripcion, callback) => {
+    connection.query(
+        'INSERT INTO diasnolaborables (dia, mes, descripcion) VALUES (?, ?, ?)',
+        [dia, mes, descripcion],
+        (err, results) => {
+            callback(err, results);
+        }
+    );
 };
+
 
 module.exports = Feriados;
 

@@ -21,14 +21,25 @@ block contenido
                                         li= error
 
                         form(action="/agendas/crearFeriado" method="post")
+                            input(type="hidden", name="agendaId", value=agendaId)
+
                             .mb-3
-                                label.form-label(for="fecha") Fecha:
-                                input.form-control(type="date", name="fecha", id="fecha", placeholder="Ej: 1990-01-01")
+                                label.form-label(for="dia") Día:
+                                input.form-control(type="number", name="dia", id="dia", min="1", max="31", placeholder="Ej: 1", value=(typeof datosIngresados !== 'undefined' ? datosIngresados.dia : '')
+)
+
                             .mb-3
-                                label.form-label(for="descripcion") Descripcion:
-                                input.form-control(type="text", name="descripcion", id="descripcion", placeholder="Ej: Día del Trabajador")
-                            
+                                label.form-label(for="mes") Mes:
+                                input.form-control(type="number", name="mes", id="mes", min="1", max="12", placeholder="Ej: 5", value=(typeof datosIngresados !== 'undefined' ? datosIngresados.mes : ''))
+
+
+
+
+                            .mb-3
+                                label.form-label(for="descripcion") Descripción:
+                                input.form-control(type="text", name="descripcion", id="descripcion", placeholder="Ej: Día del Trabajador", value=(typeof datosIngresados !== 'undefined' ? datosIngresados.descripcion : ''))
 
                             button.btn.btn-success.w-100(type="submit")
                                 i.bi.bi-person-plus-fill.me-1
                                 | Crear Feriado
+
