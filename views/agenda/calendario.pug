@@ -87,7 +87,7 @@ block contenido
                   })
                   .then(data => {
                     console.log('Respuesta al crear/verificar turnos:', data);
-                    location.reload(); // O actualizar los datos si no querés recargar
+                    window.location.reload(); // O actualizar los datos si no querés recargar
                   })
                   .catch(error => {
                     console.error('Error:', error);

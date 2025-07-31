@@ -385,7 +385,7 @@ exports.vistaCalendario = (req, res) => {
             const fecha = moment(`${añoActual}-${f.mes}-${f.dia}`, 'YYYY-M-D').format('YYYY-MM-DD');
             return fecha;
         });
-        console.log('Fechas no laborales:', fechasNoLaborales);
+        
     AgendaModel.obtenerAgendaPorId(id, (err, agenda) => {
         if (err || agenda.length === 0) return res.status(500).send("Error al cargar agenda");
     
